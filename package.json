@@ -12,5 +12,9 @@
   "volta": {
     "node": "18.20.5",
     "npm": "9.9.4"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
   }
 }
