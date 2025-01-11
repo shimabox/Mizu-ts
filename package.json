@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "volta": {
+    "node": "18.20.5",
+    "npm": "9.9.4"
+  }
 }
