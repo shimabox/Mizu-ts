@@ -1,4 +1,4 @@
-function render(value: string): void {
+export function render(value: string): void {
   document.body.innerHTML = value;
 }
 
