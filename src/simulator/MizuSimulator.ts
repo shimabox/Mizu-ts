@@ -65,13 +65,14 @@ export class MizuSimulator {
   private createAtom(): H {
     const x = this.cw * Math.random();
     const y = this.ch * Math.random();
-    const h = new H(this.cw);
+    const h = new H(this.cw, this.ch);
     h.initializeDrawingProperties(new Coordinate(x, y));
     return h;
   }
 
   private renderAtoms(): void {
     for (const h of this.h) {
+      h.updatePosition();
       h.render(this.bufferCtx);
     }
   }
