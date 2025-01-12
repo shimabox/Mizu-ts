@@ -27,6 +27,17 @@ describe('MizuSimulator クラスのテスト', () => {
     expect(() => simulator.renderFrame()).not.toThrow(); // 描画がエラーをスローしない
   });
 
+  it('フレーム描画時に H が正しく移動すること', () => {
+    simulator.init(1);
+    const initialX = simulator['h'][0].x;
+    const initialY = simulator['h'][0].y;
+
+    simulator.renderFrame();
+
+    expect(simulator['h'][0].x).not.toBe(initialX);
+    expect(simulator['h'][0].y).not.toBe(initialY);
+  });
+
   it('スケール係数が正しく計算されること', () => {
     // 環境によって異なるスケール値の確認
     Object.defineProperty(simulator, 'cw', { value: 500 }); // 横幅500でテスト
