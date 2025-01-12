@@ -4,6 +4,15 @@ Mizu-ts is a joke script that simulates water(H2o) generation in TypeScript.
 > [!NOTE]
 > This project is under development (WIP). A TypeScript port of [Mizu](https://github.com/shimabox/Mizu), originally written in JavaScript.
 
+## TODO
+
+- [ ] Hを描画
+- [ ] Hをたくさん描画
+- [ ] Hを動かす
+- [ ] HがぶつかったらH2にする
+- [ ] Oを描画
+- [ ] H2とOがぶつかったらH2oにする
+
 ## Prerequisites
 
 - Node.js >= 18.0.0
