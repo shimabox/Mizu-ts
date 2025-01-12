@@ -9,9 +9,8 @@
     "dev:types": "tsc --noEmit --watch",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint 'src/**/*.{js,ts}'",
-    "lint:fix": "eslint 'src/**/*.{js,ts}' --fix",
-    "format": "prettier --write 'src/**/*.{js,ts}'"
+    "lint": "biome check",
+    "format": "biome format --write"
   },
   "keywords": [],
   "author": "",
