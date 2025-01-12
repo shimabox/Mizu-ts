@@ -19,9 +19,11 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "jsdom": "^26.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
     "vite": "^6.0.7",
-    "vite-plugin-checker": "^0.8.0"
+    "vite-plugin-checker": "^0.8.0",
+    "vitest": "^2.1.8"
   }
 }
