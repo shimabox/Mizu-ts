@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Mizu-ts is a joke script that simulates water(H2o) generation in TypeScript.",
   "scripts": {
-    "dev": "vite",
+    "dev": "run-p dev:server dev:types",
+    "dev:server": "vite",
+    "dev:types": "tsc --noEmit --watch",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
@@ -15,6 +17,7 @@
     "npm": "9.9.4"
   },
   "devDependencies": {
+    "npm-run-all": "^4.1.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
     "vite": "^6.0.7",
