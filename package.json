@@ -1,6 +1,6 @@
 {
   "name": "mizu-ts",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Mizu-ts is a joke script that simulates water(H2o) generation in TypeScript.",
   "type": "module",
   "scripts": {

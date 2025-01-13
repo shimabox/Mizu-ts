@@ -1,4 +1,5 @@
 import type { Coordinate } from './Coordinate';
+import type { H } from './H';
 
 export class O {
   public x = 0;
@@ -82,5 +83,18 @@ export class O {
     ctx.shadowBlur = 1;
 
     ctx.fillText(this.getName(), this.x, this.y);
+  }
+
+  isHit(target: H): boolean {
+    if (!target.isMerged()) {
+      return false;
+    }
+
+    const dx = target.x - this.x; // ターゲットとのx座標の差分を計算
+    const dy = target.y - this.y; // ターゲットとのy座標の差分を計算
+    const distance = Math.sqrt(dx * dx + dy * dy); // ターゲットとの距離を計算 (ピタゴラスの定理を使用)
+    const hitDistance = this.r + target.r; // 当たり判定の距離を計算 (2つのAtomの半径の和)
+
+    return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
   }
 }
