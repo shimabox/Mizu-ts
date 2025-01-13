@@ -1,5 +1,6 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import { MizuSimulator } from '../../src/simulator/MizuSimulator';
+import { Coordinate } from '../../src/atoms/Coordinate';
 
 describe('MizuSimulator クラスのテスト', () => {
   let simulator: MizuSimulator;
@@ -9,12 +10,12 @@ describe('MizuSimulator クラスのテスト', () => {
   });
 
   it('初期化時に指定された数の H が生成されること', () => {
-    simulator.init(10); // H を10個生成
-    expect(simulator['h'].length).toBe(10); // プライベート変数を直接確認
+    simulator.init(10);
+    expect(simulator['h'].length).toBe(10);
   });
 
   it('H がランダムな座標で初期化されること', () => {
-    simulator.init(1); // H を1個生成
+    simulator.init(1);
     const h = simulator['h'][0];
     expect(h.x).toBeGreaterThanOrEqual(0);
     expect(h.x).toBeLessThanOrEqual(simulator['cw']);
@@ -23,8 +24,8 @@ describe('MizuSimulator クラスのテスト', () => {
   });
 
   it('フレームの描画がエラーなく実行されること', () => {
-    simulator.init(5); // H を5個生成
-    expect(() => simulator.renderFrame()).not.toThrow(); // 描画がエラーをスローしない
+    simulator.init(5);
+    expect(() => simulator.renderFrame()).not.toThrow();
   });
 
   it('フレーム描画時に H が正しく移動すること', () => {
@@ -38,15 +39,13 @@ describe('MizuSimulator クラスのテスト', () => {
     expect(simulator['h'][0].y).not.toBe(initialY);
   });
 
-  it('スケール係数が正しく計算されること', () => {
-    // 環境によって異なるスケール値の確認
-    Object.defineProperty(simulator, 'cw', { value: 500 }); // 横幅500でテスト
-    expect(simulator.getScale()).toBe(1.0);
+  it('H同士の衝突時に結合が正しく行われること', () => {
+    simulator.init(2);
+    simulator['h'][0].initializeDrawingProperties(new Coordinate(100, 100));
+    simulator['h'][1].initializeDrawingProperties(new Coordinate(105, 105)); // 衝突する位置
 
-    Object.defineProperty(simulator, 'cw', { value: 800 }); // 横幅800でテスト
-    expect(simulator.getScale()).toBe(1.2);
+    simulator.renderFrame();
 
-    Object.defineProperty(simulator, 'cw', { value: 1300 }); // 横幅1300でテスト
-    expect(simulator.getScale()).toBe(1.5);
+    expect(simulator['h'][0].isMergedH()).toBe(true);
   });
 });
