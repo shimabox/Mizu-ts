@@ -12,6 +12,34 @@ describe('H クラスのテスト', () => {
 
     expect(h.x).toBe(100);
     expect(h.y).toBe(200);
+    expect(h.getName()).toBe('H');
+  });
+
+  it('mergeAndRenderメソッドが結合後のHを正しく生成していること', () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas context not available');
+
+    const h = new H(sw, sh);
+    h.mergeAndRender(ctx, new Coordinate(150, 250));
+
+    expect(h.isMergedH()).toBe(true);
+    expect(h.getName()).toBe('H2');
+    expect(h.x).toBe(150);
+    expect(h.y).toBe(250);
+  });
+
+  it('H同士の衝突を正しく判定すること', () => {
+    const h1 = new H(sw, sh);
+    h1.initializeDrawingProperties(new Coordinate(100, 100));
+
+    const h2 = new H(sw, sh);
+    h2.initializeDrawingProperties(new Coordinate(110, 110));
+
+    expect(h1.isHit(h2)).toBe(true);
+
+    h2.initializeDrawingProperties(new Coordinate(300, 300));
+    expect(h1.isHit(h2)).toBe(false);
   });
 
   it('描画処理がエラーなく実行されること', () => {

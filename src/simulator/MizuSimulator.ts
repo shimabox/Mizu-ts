@@ -47,7 +47,7 @@ export class MizuSimulator {
     this.bufferCtx.fillStyle = '#fff';
     this.bufferCtx.fillRect(0, 0, this.cw, this.ch);
 
-    this.renderAtoms();
+    this.renderH(this.h);
 
     this.ctx.drawImage(this.bufferCanvas, 0, 0);
   }
@@ -70,10 +70,30 @@ export class MizuSimulator {
     return h;
   }
 
-  private renderAtoms(): void {
-    for (const h of this.h) {
-      h.updatePosition();
-      h.render(this.bufferCtx);
+  private renderH(atoms: H[]): void {
+    for (let i = 0; i < atoms.length; i++) {
+      const _h = atoms[i];
+      _h.updatePosition();
+      _h.render(this.bufferCtx);
+
+      if (_h.isMergedH()) {
+        continue;
+      }
+
+      for (let j = i + 1; j < atoms.length; j++) {
+        const target = atoms[j];
+        if (!_h.isHit(target)) {
+          continue;
+        }
+
+        // 結合処理
+        _h.mergeAndRender(this.bufferCtx, new Coordinate(_h.x, _h.y));
+
+        // 衝突した相手は新しい H に差し替え
+        atoms[j] = this.createAtom();
+
+        break;
+      }
     }
   }
 }
