@@ -15,13 +15,18 @@ describe('H クラスのテスト', () => {
     expect(h.getName()).toBe('H');
   });
 
-  it('Hが結合されると名前がH2になること', () => {
+  it('mergeAndRenderメソッドが結合後のHを正しく生成していること', () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Canvas context not available');
+
     const h = new H(sw, sh);
-    h.initializeDrawingProperties(new Coordinate(100, 200));
+    h.mergeAndRender(ctx, new Coordinate(150, 250));
 
-    h.markAsMerged();
-
+    expect(h.isMergedH()).toBe(true);
     expect(h.getName()).toBe('H2');
+    expect(h.x).toBe(150);
+    expect(h.y).toBe(250);
   });
 
   it('H同士の衝突を正しく判定すること', () => {

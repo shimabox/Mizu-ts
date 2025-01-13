@@ -1,4 +1,4 @@
-import { Coordinate } from './Coordinate';
+import type { Coordinate } from './Coordinate';
 
 export class H {
   public x = 0;
@@ -11,7 +11,6 @@ export class H {
   private name = 'H';
   private mergedName = 'H2';
   private isMerged = false;
-  private isH2Rendered = false;
   private vx = 0;
   private vy = 0;
 
@@ -59,13 +58,6 @@ export class H {
   }
 
   public render(ctx: CanvasRenderingContext2D): void {
-    // 結合済み (H2) になったら、初回だけ再計測
-    if (this.isMerged && !this.isH2Rendered) {
-      // TODO: isH2Renderedでの制御はワークアラウンドっぽいのでなんとかしたい
-      this.isH2Rendered = true;
-      this.initializeDrawingProperties(new Coordinate(this.x, this.y));
-    }
-
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = this.color;
@@ -120,11 +112,16 @@ export class H {
     return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
   }
 
-  public markAsMerged(): void {
-    this.isMerged = true;
-  }
-
   public isMergedH(): boolean {
     return this.isMerged;
+  }
+
+  public mergeAndRender(
+    ctx: CanvasRenderingContext2D,
+    coordinate: Coordinate,
+  ): void {
+    this.isMerged = true;
+    this.initializeDrawingProperties(coordinate);
+    this.render(ctx);
   }
 }
