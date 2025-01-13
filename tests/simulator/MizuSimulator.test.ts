@@ -59,6 +59,6 @@ describe('MizuSimulator クラスのテスト', () => {
 
     simulator.renderFrame();
 
-    expect(simulator['h'][0].isMergedH()).toBe(true);
+    expect(simulator['h'][0].isMerged()).toBe(true);
   });
 });

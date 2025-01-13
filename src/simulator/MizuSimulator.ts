@@ -90,7 +90,7 @@ export class MizuSimulator {
       _h.updatePosition();
       _h.render(this.bufferCtx);
 
-      if (_h.isMergedH()) {
+      if (_h.isMerged()) {
         continue;
       }
 
