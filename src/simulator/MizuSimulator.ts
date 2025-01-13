@@ -1,10 +1,13 @@
 import { Coordinate } from '../atoms/Coordinate';
 import { H } from '../atoms/H';
+import { H2o } from '../atoms/H2o';
 import { O } from '../atoms/O';
 
 export class MizuSimulator {
   private h: H[] = [];
   private o: O[] = [];
+  private h2o: H2o[] = [];
+
   private cw: number;
   private ch: number;
   private ctx: CanvasRenderingContext2D;
@@ -53,7 +56,8 @@ export class MizuSimulator {
     this.bufferCtx.fillRect(0, 0, this.cw, this.ch);
 
     this.renderH(this.h);
-    this.renderO(this.o);
+    this.renderO(this.o, this.h, this.h2o);
+    this.renderH2o(this.h2o);
 
     this.ctx.drawImage(this.bufferCanvas, 0, 0);
   }
@@ -84,6 +88,12 @@ export class MizuSimulator {
     return o;
   }
 
+  private createH2oAtom(coordinate: Coordinate): H2o {
+    const h2o = new H2o(this.cw, this.ch);
+    h2o.initializeDrawingProperties(coordinate);
+    return h2o;
+  }
+
   private renderH(atoms: H[]): void {
     for (let i = 0; i < atoms.length; i++) {
       const _h = atoms[i];
@@ -111,11 +121,47 @@ export class MizuSimulator {
     }
   }
 
-  private renderO(atoms: O[]): void {
-    for (let i = 0; i < atoms.length; i++) {
-      const _o = atoms[i];
+  private renderO(oAtoms: O[], hAtoms: H[], h2oAtoms: H2o[]): void {
+    for (const _o of oAtoms) {
       _o.updatePosition();
       _o.render(this.bufferCtx);
+
+      for (const _h of hAtoms) {
+        if (!_o.isHit(_h)) {
+          continue;
+        }
+
+        // 水になった酸素原子は詰め替える
+        const oIndex = oAtoms.indexOf(_o);
+        if (oIndex >= 0) {
+          // ループ中にすでに消えているケースがある
+          oAtoms[oIndex] = this.createOAtom();
+        }
+
+        // 水になった水素原子は詰め替える
+        const h2Index = hAtoms.indexOf(_h);
+        if (h2Index >= 0) {
+          // ループ中にすでに消えているケースがある
+          hAtoms[h2Index] = this.createHAtom();
+        }
+
+        // 水生成
+        h2oAtoms.push(this.createH2oAtom(new Coordinate(_o.x, _o.y)));
+      }
+    }
+  }
+
+  private renderH2o(atoms: H2o[]): void {
+    for (let i = atoms.length - 1; i >= 0; i--) {
+      const _h2o = atoms[i];
+      _h2o.updatePosition();
+
+      if (_h2o.isDeleted()) {
+        atoms.splice(i, 1);
+        continue;
+      }
+
+      _h2o.render(this.bufferCtx);
     }
   }
 }

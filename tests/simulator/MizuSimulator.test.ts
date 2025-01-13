@@ -1,6 +1,7 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import { MizuSimulator } from '../../src/simulator/MizuSimulator';
 import { Coordinate } from '../../src/atoms/Coordinate';
+import { H2o } from '../../src/atoms/H2o';
 
 describe('MizuSimulator クラスのテスト', () => {
   let simulator: MizuSimulator;
@@ -61,4 +62,40 @@ describe('MizuSimulator クラスのテスト', () => {
 
     expect(simulator['h'][0].isMerged()).toBe(true);
   });
+
+  it('H2とOの衝突時に H2o が生成されること', () => {
+    simulator.init(1, 1);
+    simulator['h'][0].initializeDrawingProperties(new Coordinate(100, 100));
+    simulator['h'][0].mergeAndRender(simulator['bufferCtx'], new Coordinate(100, 100));
+
+    simulator['o'][0].initializeDrawingProperties(new Coordinate(100, 100));
+
+    simulator.renderFrame();
+
+    expect(simulator['h2o'].length).toBe(1);
+  });
+
+  it('H2o は画面外に移動したら削除されていること', () => {
+    const h2o = new H2o(800, 600);
+    h2o.initializeDrawingProperties(new Coordinate(800, 600));
+    simulator['h2o'][0] = h2o;
+
+    simulator.renderFrame();
+
+    expect(simulator['h2o'].length).toBe(0);
+  });
+
+  it('画面サイズによってscaleが正しい値を返すこと', () => {
+    simulator['cw'] = 767;
+    simulator['ch'] = 600;
+
+    expect(simulator.getScale()).toBe(1.0);
+
+    simulator['cw'] = 768;
+    expect(simulator.getScale()).toBe(1.2);
+
+    simulator['cw'] = 1280;
+    expect(simulator.getScale()).toBe(1.5);
+  });
+
 });
