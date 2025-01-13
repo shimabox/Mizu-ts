@@ -23,7 +23,7 @@ describe('H クラスのテスト', () => {
     const h = new H(sw, sh);
     h.mergeAndRender(ctx, new Coordinate(150, 250));
 
-    expect(h.isMergedH()).toBe(true);
+    expect(h.isMerged()).toBe(true);
     expect(h.getName()).toBe('H2');
     expect(h.x).toBe(150);
     expect(h.y).toBe(250);

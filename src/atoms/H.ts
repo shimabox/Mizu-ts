@@ -10,7 +10,7 @@ export class H {
 
   private name = 'H';
   private mergedName = 'H2';
-  private isMerged = false;
+  private isMergedFlag = false;
   private vx = 0;
   private vy = 0;
 
@@ -38,7 +38,7 @@ export class H {
   }
 
   public getName(): string {
-    if (this.isMerged) {
+    if (this.isMergedFlag) {
       return this.mergedName;
     }
 
@@ -46,7 +46,7 @@ export class H {
   }
 
   public getColor(): string {
-    if (this.isMerged) {
+    if (this.isMergedFlag) {
       return this.color;
     }
 
@@ -68,7 +68,7 @@ export class H {
 
     const fontSize = 24 * this.getScale();
     ctx.font = `${fontSize}px sans-serif`;
-    if (this.isMerged) {
+    if (this.isMergedFlag) {
       // "H" と 下付き "2" を分けて描画する
       ctx.fillText('H', this.x - this.w / 2, this.y);
       const fontSize2 = 18 * this.getScale();
@@ -112,15 +112,15 @@ export class H {
     return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
   }
 
-  public isMergedH(): boolean {
-    return this.isMerged;
+  public isMerged(): boolean {
+    return this.isMergedFlag;
   }
 
   public mergeAndRender(
     ctx: CanvasRenderingContext2D,
     coordinate: Coordinate,
   ): void {
-    this.isMerged = true;
+    this.isMergedFlag = true;
     this.initializeDrawingProperties(coordinate);
     this.render(ctx);
   }
