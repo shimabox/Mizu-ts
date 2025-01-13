@@ -1,8 +1,10 @@
 import { Coordinate } from '../atoms/Coordinate';
 import { H } from '../atoms/H';
+import { O } from '../atoms/O';
 
 export class MizuSimulator {
   private h: H[] = [];
+  private o: O[] = [];
   private cw: number;
   private ch: number;
   private ctx: CanvasRenderingContext2D;
@@ -37,9 +39,12 @@ export class MizuSimulator {
     this.bufferCtx = bufferCtx;
   }
 
-  public init(hCount: number): void {
+  public init(hCount: number, oCount: number): void {
     for (let i = 0; i < hCount; i++) {
-      this.h.push(this.createAtom());
+      this.h.push(this.createHAtom());
+    }
+    for (let i = 0; i < oCount; i++) {
+      this.o.push(this.createOAtom());
     }
   }
 
@@ -48,6 +53,7 @@ export class MizuSimulator {
     this.bufferCtx.fillRect(0, 0, this.cw, this.ch);
 
     this.renderH(this.h);
+    this.renderO(this.o);
 
     this.ctx.drawImage(this.bufferCanvas, 0, 0);
   }
@@ -62,12 +68,20 @@ export class MizuSimulator {
     return 1.5;
   }
 
-  private createAtom(): H {
+  private createHAtom(): H {
     const x = this.cw * Math.random();
     const y = this.ch * Math.random();
     const h = new H(this.cw, this.ch);
     h.initializeDrawingProperties(new Coordinate(x, y));
     return h;
+  }
+
+  private createOAtom(): O {
+    const x = this.cw * Math.random();
+    const y = this.ch * Math.random();
+    const o = new O(this.cw, this.ch);
+    o.initializeDrawingProperties(new Coordinate(x, y));
+    return o;
   }
 
   private renderH(atoms: H[]): void {
@@ -90,10 +104,18 @@ export class MizuSimulator {
         _h.mergeAndRender(this.bufferCtx, new Coordinate(_h.x, _h.y));
 
         // 衝突した相手は新しい H に差し替え
-        atoms[j] = this.createAtom();
+        atoms[j] = this.createHAtom();
 
         break;
       }
+    }
+  }
+
+  private renderO(atoms: O[]): void {
+    for (let i = 0; i < atoms.length; i++) {
+      const _o = atoms[i];
+      _o.updatePosition();
+      _o.render(this.bufferCtx);
     }
   }
 }
