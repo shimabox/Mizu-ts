@@ -72,6 +72,18 @@ export class MizuSimulator {
     return 1.5;
   }
 
+  public getHLength(): number {
+    return this.h.length;
+  }
+
+  public getOLength(): number {
+    return this.o.length;
+  }
+
+  public getH2oLength(): number {
+    return this.h2o.length;
+  }
+
   private createHAtom(): H {
     const x = this.cw * Math.random();
     const y = this.ch * Math.random();
