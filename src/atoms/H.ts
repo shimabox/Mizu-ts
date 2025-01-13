@@ -104,6 +104,10 @@ export class H {
   }
 
   isHit(target: H): boolean {
+    if (target.isMerged()) {
+      return false;
+    }
+
     const dx = target.x - this.x; // ターゲットとのx座標の差分を計算
     const dy = target.y - this.y; // ターゲットとのy座標の差分を計算
     const distance = Math.sqrt(dx * dx + dy * dy); // ターゲットとの距離を計算 (ピタゴラスの定理を使用)

@@ -42,10 +42,20 @@ describe('H クラスのテスト', () => {
     expect(h1.isHit(h2)).toBe(false);
   });
 
+  it('結合していない H とは衝突しないこと', () => {
+    const h1 = new H(sw, sh);
+    h1.initializeDrawingProperties(new Coordinate(100, 100));
+
+    const h2 = new H(sw, sh);
+    h2.initializeDrawingProperties(new Coordinate(110, 110));
+
+    h2.mergeAndRender(document.createElement('canvas').getContext('2d')!, new Coordinate(110, 110));
+
+    expect(h1.isHit(h2)).toBe(false);
+  });
+
   it('描画処理がエラーなく実行されること', () => {
     const canvas = document.createElement('canvas');
-    canvas.width = 800;
-    canvas.height = 600;
     const ctx = canvas.getContext('2d');
 
     if (!ctx) {
