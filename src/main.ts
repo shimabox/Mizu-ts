@@ -3,7 +3,7 @@ import { MizuSimulator } from './simulator/MizuSimulator';
 document.addEventListener('DOMContentLoaded', () => {
   const simulator = new MizuSimulator();
   const scale = simulator.getScale();
-  simulator.init(30 * scale, 20 * scale);
+  simulator.init(30 * scale, 50 * scale);
 
   const loop = () => {
     simulator.renderFrame();
