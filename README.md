@@ -1,6 +1,12 @@
 # Mizu-ts
 Mizu-ts is a joke script that simulates water(H2o) generation in TypeScript.
 
+![Mizu-ts](https://github.com/shimabox/Mizu-ts/blob/main/images/demo.gif)
+
+## Demo
+
+https://shimabox.github.io/Mizu-ts/
+
 > [!NOTE]
 > This project is under development (WIP). A TypeScript port of [Mizu](https://github.com/shimabox/Mizu), originally written in JavaScript.
 
@@ -50,7 +56,8 @@ Mizu-ts is a joke script that simulates water(H2o) generation in TypeScript.
     ![#8](https://github.com/shimabox/Mizu-ts/blob/main/images/v0.7.0.gif)
 
     </details>
-- [ ] GitHub Pages へのデプロイ
+- [x] GitHub Pages へのデプロイ
+  - https://github.com/shimabox/Mizu-ts/releases/tag/v0.7.1
 - [ ] 計測処理実装
 - [ ] 改善(interfaceを利用した実装にする, リファクタなど)
 
