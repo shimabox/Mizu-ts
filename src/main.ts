@@ -10,7 +10,7 @@ const getSafeNumber = (param: string | null, defaultValue: number): number => {
   return Number.isNaN(value) ? defaultValue : value;
 };
 const hCount = getSafeNumber(urlParams.get('h'), 30);
-const oCount = getSafeNumber(urlParams.get('o'), 30);
+const oCount = getSafeNumber(urlParams.get('o'), 50);
 
 window.addEventListener('DOMContentLoaded', () => {
   const simulator = new MizuSimulator();
