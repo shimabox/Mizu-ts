@@ -22,6 +22,7 @@ window.addEventListener('DOMContentLoaded', () => {
       Measurement.factory()
         .measure(() => simulator.renderFrame())
         .add(`H: ${simulator.getHLength()}`)
+        .add(`H2: ${simulator.getH2Length()}`)
         .add(`O: ${simulator.getOLength()}`)
         .add(`H2o: ${simulator.getH2oLength()}`)
         .render();
