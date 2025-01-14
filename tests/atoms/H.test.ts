@@ -10,8 +10,8 @@ describe('H クラスのテスト', () => {
     const h = new H(sw, sh);
     h.initializeDrawingProperties(new Coordinate(100, 200));
 
-    expect(h.x).toBe(100);
-    expect(h.y).toBe(200);
+    expect(h.getX()).toBe(100);
+    expect(h.getY()).toBe(200);
     expect(h.getName()).toBe('H');
   });
 
@@ -25,8 +25,8 @@ describe('H クラスのテスト', () => {
 
     expect(h.isMerged()).toBe(true);
     expect(h.getName()).toBe('H2');
-    expect(h.x).toBe(150);
-    expect(h.y).toBe(250);
+    expect(h.getX()).toBe(150);
+    expect(h.getY()).toBe(250);
   });
 
   it('H同士の衝突を正しく判定すること', () => {
@@ -72,13 +72,13 @@ describe('H クラスのテスト', () => {
     const h = new H(sw, sh);
     h.initializeDrawingProperties(new Coordinate(100, 100));
 
-    const initialX = h.x;
-    const initialY = h.y;
+    const initialX = h.getX();
+    const initialY = h.getY();
 
     h.updatePosition();
 
-    expect(h.x).not.toBe(initialX);
-    expect(h.y).not.toBe(initialY);
+    expect(h.getX()).not.toBe(initialX);
+    expect(h.getY()).not.toBe(initialY);
   });
 
   it('位置がキャンバスの範囲内に収まること', () => {
@@ -88,10 +88,10 @@ describe('H クラスのテスト', () => {
     for (let i = 0; i < 100; i++) {
       h.updatePosition();
 
-      expect(h.x).toBeGreaterThanOrEqual(0);
-      expect(h.x).toBeLessThanOrEqual(sw);
-      expect(h.y).toBeGreaterThanOrEqual(0);
-      expect(h.y).toBeLessThanOrEqual(sh);
+      expect(h.getX()).toBeGreaterThanOrEqual(0);
+      expect(h.getX()).toBeLessThanOrEqual(sw);
+      expect(h.getY()).toBeGreaterThanOrEqual(0);
+      expect(h.getY()).toBeLessThanOrEqual(sh);
     }
   });
 });

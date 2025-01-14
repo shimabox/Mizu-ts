@@ -1,12 +1,12 @@
 import type { Coordinate } from './Coordinate';
 
 export class H {
-  public x = 0;
-  public y = 0;
-  public w = 0;
-  public h = 0;
-  public r = 0;
-  public color = '';
+  private x = 0;
+  private y = 0;
+  private w = 0;
+  private h = 0;
+  private r = 0;
+  private color = '';
 
   private name = 'H';
   private mergedName = 'H2';
@@ -45,16 +45,16 @@ export class H {
     return this.name;
   }
 
-  public getColor(): string {
-    if (this.isMergedFlag) {
-      return this.color;
-    }
-
-    return `#${Math.random().toString(16).slice(-6)}`;
+  public getX(): number {
+    return this.x;
   }
 
-  public getScale(): number {
-    return this.sw < 768 ? 1.0 : 1.2;
+  public getY(): number {
+    return this.y;
+  }
+
+  public getRadius(): number {
+    return this.r;
   }
 
   public render(ctx: CanvasRenderingContext2D): void {
@@ -103,15 +103,15 @@ export class H {
     if (this.y + this.h < 0) this.y = this.sh + this.h / 2;
   }
 
-  isHit(target: H): boolean {
+  public isHit(target: H): boolean {
     if (target.isMerged()) {
       return false;
     }
 
-    const dx = target.x - this.x; // ターゲットとのx座標の差分を計算
-    const dy = target.y - this.y; // ターゲットとのy座標の差分を計算
+    const dx = target.getX() - this.x; // ターゲットとのx座標の差分を計算
+    const dy = target.getY() - this.y; // ターゲットとのy座標の差分を計算
     const distance = Math.sqrt(dx * dx + dy * dy); // ターゲットとの距離を計算 (ピタゴラスの定理を使用)
-    const hitDistance = this.r + target.r; // 当たり判定の距離を計算 (2つのAtomの半径の和)
+    const hitDistance = this.r + target.getRadius(); // 当たり判定の距離を計算 (2つのAtomの半径の和)
 
     return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
   }
@@ -127,5 +127,17 @@ export class H {
     this.isMergedFlag = true;
     this.initializeDrawingProperties(coordinate);
     this.render(ctx);
+  }
+
+  private getColor(): string {
+    if (this.isMergedFlag) {
+      return this.color;
+    }
+
+    return `#${Math.random().toString(16).slice(-6)}`;
+  }
+
+  private getScale(): number {
+    return this.sw < 768 ? 1.0 : 1.2;
   }
 }

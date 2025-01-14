@@ -11,8 +11,8 @@ describe('O クラスのテスト', () => {
     const o = new O(sw, sh);
     o.initializeDrawingProperties(new Coordinate(200, 300));
 
-    expect(o.x).toBe(200);
-    expect(o.y).toBe(300);
+    expect(o.getX()).toBe(200);
+    expect(o.getY()).toBe(300);
     expect(o.getName()).toBe('O');
   });
 
@@ -23,10 +23,10 @@ describe('O クラスのテスト', () => {
     for (let i = 0; i < 100; i++) {
       o.updatePosition();
 
-      expect(o.x).toBeGreaterThanOrEqual(0);
-      expect(o.x).toBeLessThanOrEqual(sw);
-      expect(o.y).toBeGreaterThanOrEqual(0);
-      expect(o.y).toBeLessThanOrEqual(sh);
+      expect(o.getX()).toBeGreaterThanOrEqual(0);
+      expect(o.getX()).toBeLessThanOrEqual(sw);
+      expect(o.getY()).toBeGreaterThanOrEqual(0);
+      expect(o.getY()).toBeLessThanOrEqual(sh);
     }
   });
 

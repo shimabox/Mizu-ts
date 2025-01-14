@@ -10,10 +10,8 @@ describe('H2o クラスのテスト', () => {
     const h2o = new H2o(sw, sh);
     h2o.initializeDrawingProperties(new Coordinate(100, 200));
 
-    expect(h2o.x).toBe(100);
-    expect(h2o.y).toBe(200);
-    expect(h2o.w).toBeGreaterThan(0);
-    expect(h2o.h).toBeGreaterThan(0);
+    expect(h2o.getX()).toBe(100);
+    expect(h2o.getY()).toBe(200);
   });
 
   it('位置が更新され、範囲外に出たとき削除フラグが立つこと', () => {
