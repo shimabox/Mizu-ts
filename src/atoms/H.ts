@@ -9,8 +9,6 @@ export class H {
   private color = '';
 
   private name = 'H';
-  private mergedName = 'H2';
-  private isMergedFlag = false;
   private vx = 0;
   private vy = 0;
 
@@ -38,10 +36,6 @@ export class H {
   }
 
   public getName(): string {
-    if (this.isMergedFlag) {
-      return this.mergedName;
-    }
-
     return this.name;
   }
 
@@ -68,15 +62,6 @@ export class H {
 
     const fontSize = 24 * this.getScale();
     ctx.font = `${fontSize}px sans-serif`;
-    if (this.isMergedFlag) {
-      // "H" と 下付き "2" を分けて描画する
-      ctx.fillText('H', this.x - this.w / 2, this.y);
-      const fontSize2 = 18 * this.getScale();
-      ctx.font = `${fontSize2}px sans-serif`;
-      ctx.fillText('2', this.x, this.y + 2);
-      return;
-    }
-
     ctx.fillText(this.getName(), this.x, this.y);
   }
 
@@ -104,10 +89,6 @@ export class H {
   }
 
   public isHit(target: H): boolean {
-    if (target.isMerged()) {
-      return false;
-    }
-
     const dx = target.getX() - this.x; // ターゲットとのx座標の差分を計算
     const dy = target.getY() - this.y; // ターゲットとのy座標の差分を計算
     const distance = Math.sqrt(dx * dx + dy * dy); // ターゲットとの距離を計算 (ピタゴラスの定理を使用)
@@ -116,24 +97,7 @@ export class H {
     return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
   }
 
-  public isMerged(): boolean {
-    return this.isMergedFlag;
-  }
-
-  public mergeAndRender(
-    ctx: CanvasRenderingContext2D,
-    coordinate: Coordinate,
-  ): void {
-    this.isMergedFlag = true;
-    this.initializeDrawingProperties(coordinate);
-    this.render(ctx);
-  }
-
   private getColor(): string {
-    if (this.isMergedFlag) {
-      return this.color;
-    }
-
     return `#${Math.random().toString(16).slice(-6)}`;
   }
 

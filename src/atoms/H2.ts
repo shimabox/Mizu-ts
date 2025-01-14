@@ -1,7 +1,7 @@
 import type { Coordinate } from './Coordinate';
-import type { H2 } from './H2';
+import type { H } from './H';
 
-export class O {
+export class H2 {
   private x = 0;
   private y = 0;
   private w = 0;
@@ -9,7 +9,7 @@ export class O {
   private r = 0;
   private color = '';
 
-  private name = 'O';
+  private name = 'H2';
   private vx = 0;
   private vy = 0;
 
@@ -18,7 +18,7 @@ export class O {
     private sh: number,
   ) {}
 
-  public initializeDrawingProperties(coord: Coordinate): void {
+  public initializeDrawingProperties(coordinate: Coordinate): void {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -28,8 +28,8 @@ export class O {
     ctx.font = `${fontSize}px sans-serif`;
     const txtSize = ctx.measureText(this.getName()).width;
 
-    this.x = coord.x;
-    this.y = coord.y;
+    this.x = coordinate.x;
+    this.y = coordinate.y;
     this.w = txtSize;
     this.h = txtSize;
     this.r = txtSize / 2;
@@ -50,6 +50,25 @@ export class O {
 
   public getRadius(): number {
     return this.r;
+  }
+
+  public render(ctx: CanvasRenderingContext2D): void {
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = '#888';
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    ctx.shadowBlur = 1;
+
+    const fontSize = 24 * this.getScale();
+    ctx.font = `${fontSize}px sans-serif`;
+
+    // "H" と 下付き "2" を分けて描画する
+    ctx.fillText('H', this.x - this.w / 2, this.y);
+    const fontSize2 = 18 * this.getScale();
+    ctx.font = `${fontSize2}px sans-serif`;
+    ctx.fillText('2', this.x, this.y + 2);
   }
 
   public updatePosition(): void {
@@ -75,27 +94,8 @@ export class O {
     if (this.y + this.h < 0) this.y = this.sh + this.h / 2;
   }
 
-  public render(ctx: CanvasRenderingContext2D): void {
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const fontSize = 24 * this.getScale();
-    ctx.font = `${fontSize}px sans-serif`;
-    ctx.fillStyle = this.color;
-    ctx.shadowColor = '#888';
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
-    ctx.shadowBlur = 1;
-
-    ctx.fillText(this.getName(), this.x, this.y);
-  }
-
-  public isHit(target: H2): boolean {
-    const dx = target.getX() - this.x; // ターゲットとのx座標の差分を計算
-    const dy = target.getY() - this.y; // ターゲットとのy座標の差分を計算
-    const distance = Math.sqrt(dx * dx + dy * dy); // ターゲットとの距離を計算 (ピタゴラスの定理を使用)
-    const hitDistance = this.r + target.getRadius(); // 当たり判定の距離を計算 (2つのAtomの半径の和)
-
-    return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
+  public isHit(_: H): boolean {
+    return false;
   }
 
   private getColor(): string {

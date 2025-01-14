@@ -1,6 +1,8 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import { MizuSimulator } from '../../src/simulator/MizuSimulator';
 import { Coordinate } from '../../src/atoms/Coordinate';
+import { H } from '../../src/atoms/H';
+import { H2 } from '../../src/atoms/H2';
 import { H2o } from '../../src/atoms/H2o';
 
 describe('MizuSimulator クラスのテスト', () => {
@@ -60,13 +62,17 @@ describe('MizuSimulator クラスのテスト', () => {
 
     simulator.renderFrame();
 
-    expect(simulator['h'][0].isMerged()).toBe(true);
+    expect(simulator['h'][0]).instanceOf(H);
+    expect(simulator['h'].length).toBe(1);
+
+    expect(simulator['h2'][0]).instanceOf(H2);
+    expect(simulator['h2'].length).toBe(1);
   });
 
   it('H2とOの衝突時に H2o が生成されること', () => {
-    simulator.init(1, 1);
+    simulator.init(2, 1);
     simulator['h'][0].initializeDrawingProperties(new Coordinate(100, 100));
-    simulator['h'][0].mergeAndRender(simulator['bufferCtx'], new Coordinate(100, 100));
+    simulator['h'][1].initializeDrawingProperties(new Coordinate(100, 100));
 
     simulator['o'][0].initializeDrawingProperties(new Coordinate(100, 100));
 
