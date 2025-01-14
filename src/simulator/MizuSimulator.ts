@@ -1,10 +1,12 @@
 import { Coordinate } from '../atoms/Coordinate';
 import { H } from '../atoms/H';
+import { H2 } from '../atoms/H2';
 import { H2o } from '../atoms/H2o';
 import { O } from '../atoms/O';
 
 export class MizuSimulator {
   private h: H[] = [];
+  private h2: H2[] = [];
   private o: O[] = [];
   private h2o: H2o[] = [];
 
@@ -56,7 +58,8 @@ export class MizuSimulator {
     this.bufferCtx.fillRect(0, 0, this.cw, this.ch);
 
     this.renderH(this.h);
-    this.renderO(this.o, this.h, this.h2o);
+    this.renderH2(this.h2);
+    this.renderO(this.o, this.h2, this.h2o);
     this.renderH2o(this.h2o);
 
     this.ctx.drawImage(this.bufferCanvas, 0, 0);
@@ -76,6 +79,10 @@ export class MizuSimulator {
     return this.h.length;
   }
 
+  public getH2Length(): number {
+    return this.h2.length;
+  }
+
   public getOLength(): number {
     return this.o.length;
   }
@@ -90,6 +97,12 @@ export class MizuSimulator {
     const h = new H(this.cw, this.ch);
     h.initializeDrawingProperties(new Coordinate(x, y));
     return h;
+  }
+
+  private createH2Atom(coordinate: Coordinate): H2 {
+    const h2 = new H2(this.cw, this.ch);
+    h2.initializeDrawingProperties(coordinate);
+    return h2;
   }
 
   private createOAtom(): O {
@@ -112,34 +125,39 @@ export class MizuSimulator {
       _h.updatePosition();
       _h.render(this.bufferCtx);
 
-      if (_h.isMerged()) {
-        continue;
-      }
-
       for (let j = i + 1; j < atoms.length; j++) {
         const target = atoms[j];
         if (!_h.isHit(target)) {
           continue;
         }
 
-        // 結合処理
-        _h.mergeAndRender(this.bufferCtx, new Coordinate(_h.getX(), _h.getY()));
+        // 衝突したtargetはH2として生成し直し
+        const coordinate = new Coordinate(target.getX(), target.getY());
+        this.h2.push(this.createH2Atom(coordinate));
 
-        // 衝突した相手は新しい H に差し替え
-        atoms[j] = this.createHAtom();
+        // 衝突したもう片方(H2にしていないほう)は作り直し
+        atoms[i] = this.createHAtom();
 
-        break;
+        // H2となったtargetは削除
+        atoms.splice(j, 1);
       }
     }
   }
 
-  private renderO(oAtoms: O[], hAtoms: H[], h2oAtoms: H2o[]): void {
+  private renderH2(atoms: H2[]): void {
+    for (const _h2 of atoms) {
+      _h2.updatePosition();
+      _h2.render(this.bufferCtx);
+    }
+  }
+
+  private renderO(oAtoms: O[], h2Atoms: H2[], h2oAtoms: H2o[]): void {
     for (const _o of oAtoms) {
       _o.updatePosition();
       _o.render(this.bufferCtx);
 
-      for (const _h of hAtoms) {
-        if (!_o.isHit(_h)) {
+      for (const _h2 of h2Atoms) {
+        if (!_o.isHit(_h2)) {
           continue;
         }
 
@@ -150,12 +168,15 @@ export class MizuSimulator {
           oAtoms[oIndex] = this.createOAtom();
         }
 
-        // 水になった水素原子は詰め替える
-        const h2Index = hAtoms.indexOf(_h);
+        // 水になった水素原子は削除
+        const h2Index = h2Atoms.indexOf(_h2);
         if (h2Index >= 0) {
           // ループ中にすでに消えているケースがある
-          hAtoms[h2Index] = this.createHAtom();
+          h2Atoms.splice(h2Index, 1);
         }
+
+        // 水になった水素原子は新しく生成しなおす
+        this.h.push(this.createHAtom());
 
         // 水生成
         h2oAtoms.push(this.createH2oAtom(new Coordinate(_o.getX(), _o.getY())));

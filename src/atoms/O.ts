@@ -1,5 +1,5 @@
 import type { Coordinate } from './Coordinate';
-import type { H } from './H';
+import type { H2 } from './H2';
 
 export class O {
   private x = 0;
@@ -89,11 +89,7 @@ export class O {
     ctx.fillText(this.getName(), this.x, this.y);
   }
 
-  public isHit(target: H): boolean {
-    if (!target.isMerged()) {
-      return false;
-    }
-
+  public isHit(target: H2): boolean {
     const dx = target.getX() - this.x; // ターゲットとのx座標の差分を計算
     const dy = target.getY() - this.y; // ターゲットとのy座標の差分を計算
     const distance = Math.sqrt(dx * dx + dy * dy); // ターゲットとの距離を計算 (ピタゴラスの定理を使用)

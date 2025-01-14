@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Coordinate } from '../../src/atoms/Coordinate';
 import { O } from '../../src/atoms/O';
-import { H } from '../../src/atoms/H';
+import { H2 } from '../../src/atoms/H2';
 
 describe('O クラスのテスト', () => {
   const sw = 800;
@@ -41,35 +41,23 @@ describe('O クラスのテスト', () => {
     expect(() => o.render(ctx)).not.toThrow();
   });
 
-  it('結合していない H とは衝突しないこと', () => {
+  it('H2と衝突判定できること', () => {
     const o = new O(sw, sh);
     o.initializeDrawingProperties(new Coordinate(100, 100));
 
-    const h = new H(sw, sh);
-    h.initializeDrawingProperties(new Coordinate(110, 110));
+    const h2 = new H2(sw, sh);
+    h2.initializeDrawingProperties(new Coordinate(105, 105)); // 衝突する位置
 
-    expect(o.isHit(h)).toBe(false);
+    expect(o.isHit(h2)).toBe(true);
   });
 
-  it('結合している H(H2) と衝突判定できること', () => {
+  it('H2と衝突しない距離では衝突しないこと', () => {
     const o = new O(sw, sh);
     o.initializeDrawingProperties(new Coordinate(100, 100));
 
-    const h = new H(sw, sh);
-    h.initializeDrawingProperties(new Coordinate(105, 105)); // 衝突する位置
-    h.mergeAndRender(document.createElement('canvas').getContext('2d')!, new Coordinate(105, 105));
+    const h2 = new H2(sw, sh);
+    h2.initializeDrawingProperties(new Coordinate(300, 300)); // 衝突しない位置
 
-    expect(o.isHit(h)).toBe(true);
-  });
-
-  it('結合している H(H2) と衝突しない距離では衝突しないこと', () => {
-    const o = new O(sw, sh);
-    o.initializeDrawingProperties(new Coordinate(100, 100));
-
-    const h = new H(sw, sh);
-    h.initializeDrawingProperties(new Coordinate(300, 300)); // 衝突しない位置
-    h.mergeAndRender(document.createElement('canvas').getContext('2d')!, new Coordinate(300, 300));
-
-    expect(o.isHit(h)).toBe(false);
+    expect(o.isHit(h2)).toBe(false);
   });
 });
