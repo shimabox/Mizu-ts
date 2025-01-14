@@ -123,7 +123,7 @@ export class MizuSimulator {
         }
 
         // 結合処理
-        _h.mergeAndRender(this.bufferCtx, new Coordinate(_h.x, _h.y));
+        _h.mergeAndRender(this.bufferCtx, new Coordinate(_h.getX(), _h.getY()));
 
         // 衝突した相手は新しい H に差し替え
         atoms[j] = this.createHAtom();

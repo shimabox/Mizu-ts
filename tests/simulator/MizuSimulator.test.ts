@@ -20,10 +20,10 @@ describe('MizuSimulator クラスのテスト', () => {
     simulator.init(1, 1);
 
     const h = simulator['h'][0];
-    expect(h.x).toBeGreaterThanOrEqual(0);
-    expect(h.x).toBeLessThanOrEqual(simulator['cw']);
-    expect(h.y).toBeGreaterThanOrEqual(0);
-    expect(h.y).toBeLessThanOrEqual(simulator['ch']);
+    expect(h.getX()).toBeGreaterThanOrEqual(0);
+    expect(h.getX()).toBeLessThanOrEqual(simulator['cw']);
+    expect(h.getY()).toBeGreaterThanOrEqual(0);
+    expect(h.getY()).toBeLessThanOrEqual(simulator['ch']);
 
     const o = simulator['o'][0];
     expect(o.x).toBeGreaterThanOrEqual(0);
@@ -40,15 +40,15 @@ describe('MizuSimulator クラスのテスト', () => {
   it('フレーム描画時に H と O が正しく移動すること', () => {
     simulator.init(1, 1);
 
-    const initialHX = simulator['h'][0].x;
-    const initialHY = simulator['h'][0].y;
+    const initialHX = simulator['h'][0].getX();
+    const initialHY = simulator['h'][0].getY();
     const initialOX = simulator['o'][0].x;
     const initialOY = simulator['o'][0].y;
 
     simulator.renderFrame();
 
-    expect(simulator['h'][0].x).not.toBe(initialHX);
-    expect(simulator['h'][0].y).not.toBe(initialHY);
+    expect(simulator['h'][0].getX()).not.toBe(initialHX);
+    expect(simulator['h'][0].getY()).not.toBe(initialHY);
     expect(simulator['o'][0].x).not.toBe(initialOX);
     expect(simulator['o'][0].y).not.toBe(initialOY);
   });
