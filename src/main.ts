@@ -5,10 +5,17 @@ const query = window.location.search;
 const urlParams = new URLSearchParams(query);
 const isMeasureMode = urlParams.get('m') === '1';
 
+const getSafeNumber = (param: string | null, defaultValue: number): number => {
+  const value = parseInt(param || '', 10);
+  return isNaN(value) ? defaultValue : value;
+};
+const hCount = getSafeNumber(urlParams.get('h'), 30);
+const oCount = getSafeNumber(urlParams.get('o'), 30);
+
 window.addEventListener('DOMContentLoaded', () => {
   const simulator = new MizuSimulator();
   const scale = simulator.getScale();
-  simulator.init(30 * scale, 50 * scale);
+  simulator.init(hCount * scale, oCount * scale);
 
   const loop = () => {
     if (isMeasureMode) {
