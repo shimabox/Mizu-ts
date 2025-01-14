@@ -1,11 +1,9 @@
 import type { Coordinate } from './Coordinate';
 
 export class H2o {
-  public x = 0;
-  public y = 0;
-  public w = 0;
-  public h = 0;
-  public r = 0;
+  private x = 0;
+  private y = 0;
+  private w = 0;
 
   private isDeletedFlag = false;
 
@@ -19,11 +17,14 @@ export class H2o {
     this.x = coordinate.x;
     this.y = coordinate.y;
     this.w = w;
-    this.h = w;
   }
 
-  public getScale(): number {
-    return this.sw < 768 ? 1.0 : 1.2;
+  public getX(): number {
+    return this.x;
+  }
+
+  public getY(): number {
+    return this.y;
   }
 
   public updatePosition(): void {
@@ -57,5 +58,9 @@ export class H2o {
 
   public isDeleted(): boolean {
     return this.isDeletedFlag;
+  }
+
+  private getScale(): number {
+    return this.sw < 768 ? 1.0 : 1.2;
   }
 }
