@@ -158,7 +158,7 @@ export class MizuSimulator {
         }
 
         // 水生成
-        h2oAtoms.push(this.createH2oAtom(new Coordinate(_o.x, _o.y)));
+        h2oAtoms.push(this.createH2oAtom(new Coordinate(_o.getX(), _o.getY())));
       }
     }
   }

@@ -2,12 +2,12 @@ import type { Coordinate } from './Coordinate';
 import type { H } from './H';
 
 export class O {
-  public x = 0;
-  public y = 0;
-  public w = 0;
-  public h = 0;
-  public r = 0;
-  public color = '';
+  private x = 0;
+  private y = 0;
+  private w = 0;
+  private h = 0;
+  private r = 0;
+  private color = '';
 
   private name = 'O';
   private vx = 0;
@@ -40,12 +40,16 @@ export class O {
     return this.name;
   }
 
-  public getColor(): string {
-    return `#${Math.random().toString(16).slice(-6)}`;
+  public getX(): number {
+    return this.x;
   }
 
-  public getScale(): number {
-    return this.sw < 768 ? 1.0 : 1.2;
+  public getY(): number {
+    return this.y;
+  }
+
+  public getRadius(): number {
+    return this.r;
   }
 
   public updatePosition(): void {
@@ -85,7 +89,7 @@ export class O {
     ctx.fillText(this.getName(), this.x, this.y);
   }
 
-  isHit(target: H): boolean {
+  public isHit(target: H): boolean {
     if (!target.isMerged()) {
       return false;
     }
@@ -96,5 +100,13 @@ export class O {
     const hitDistance = this.r + target.getRadius(); // 当たり判定の距離を計算 (2つのAtomの半径の和)
 
     return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
+  }
+
+  private getColor(): string {
+    return `#${Math.random().toString(16).slice(-6)}`;
+  }
+
+  private getScale(): number {
+    return this.sw < 768 ? 1.0 : 1.2;
   }
 }

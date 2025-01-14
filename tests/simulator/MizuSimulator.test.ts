@@ -26,10 +26,10 @@ describe('MizuSimulator クラスのテスト', () => {
     expect(h.getY()).toBeLessThanOrEqual(simulator['ch']);
 
     const o = simulator['o'][0];
-    expect(o.x).toBeGreaterThanOrEqual(0);
-    expect(o.x).toBeLessThanOrEqual(simulator['cw']);
-    expect(o.y).toBeGreaterThanOrEqual(0);
-    expect(o.y).toBeLessThanOrEqual(simulator['ch']);
+    expect(o.getX()).toBeGreaterThanOrEqual(0);
+    expect(o.getX()).toBeLessThanOrEqual(simulator['cw']);
+    expect(o.getY()).toBeGreaterThanOrEqual(0);
+    expect(o.getY()).toBeLessThanOrEqual(simulator['ch']);
   });
 
   it('フレームの描画がエラーなく実行されること', () => {
@@ -42,15 +42,15 @@ describe('MizuSimulator クラスのテスト', () => {
 
     const initialHX = simulator['h'][0].getX();
     const initialHY = simulator['h'][0].getY();
-    const initialOX = simulator['o'][0].x;
-    const initialOY = simulator['o'][0].y;
+    const initialOX = simulator['o'][0].getX();
+    const initialOY = simulator['o'][0].getY();
 
     simulator.renderFrame();
 
     expect(simulator['h'][0].getX()).not.toBe(initialHX);
     expect(simulator['h'][0].getY()).not.toBe(initialHY);
-    expect(simulator['o'][0].x).not.toBe(initialOX);
-    expect(simulator['o'][0].y).not.toBe(initialOY);
+    expect(simulator['o'][0].getX()).not.toBe(initialOX);
+    expect(simulator['o'][0].getY()).not.toBe(initialOY);
   });
 
   it('H 同士が衝突時に正しく結合されること', () => {
