@@ -6,8 +6,8 @@ const urlParams = new URLSearchParams(query);
 const isMeasureMode = urlParams.get('m') === '1';
 
 const getSafeNumber = (param: string | null, defaultValue: number): number => {
-  const value = parseInt(param || '', 10);
-  return isNaN(value) ? defaultValue : value;
+  const value = Number.parseInt(param || '', 10);
+  return Number.isNaN(value) ? defaultValue : value;
 };
 const hCount = getSafeNumber(urlParams.get('h'), 30);
 const oCount = getSafeNumber(urlParams.get('o'), 30);
