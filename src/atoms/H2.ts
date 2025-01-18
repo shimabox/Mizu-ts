@@ -24,15 +24,21 @@ export class H2 {
     if (!ctx) {
       throw new Error('Failed to get canvas 2D context');
     }
-    const fontSize = 24 * this.getScale();
-    ctx.font = `${fontSize}px sans-serif`;
-    const txtSize = ctx.measureText(this.getName()).width;
 
+    // "H" のフォントサイズと幅を計算
+    const fontSizeH = 24 * this.getScale();
+    ctx.font = `${fontSizeH}px sans-serif`; // フォントサイズは 24px としておく
+    const hWidth = ctx.measureText('H').width;
+
+    // "2" のフォントサイズと幅を計算
+    const twoWidth = ctx.measureText('2').width;
+
+    // プロパティを設定
     this.x = coordinate.x;
     this.y = coordinate.y;
-    this.w = txtSize;
-    this.h = txtSize;
-    this.r = txtSize / 2;
+    this.w = hWidth + twoWidth;
+    this.h = hWidth;
+    this.r = this.w / 2;
     this.color = this.getColor();
   }
 
@@ -64,11 +70,11 @@ export class H2 {
     // "H" と 下付き "2" を分けて描画する
     const fontSize = 24 * this.getScale();
     ctx.font = `${fontSize}px sans-serif`;
-    ctx.fillText('H', this.x - this.w / 2, this.y);
+    ctx.fillText('H', this.x - this.w / 6, this.y); // 位置は微調整
     // 下付き文字を描画
     const fontSize2 = 18 * this.getScale();
     ctx.font = `${fontSize2}px sans-serif`;
-    ctx.fillText('2', this.x, this.y + 2);
+    ctx.fillText('2', this.x + 12, this.y + 3); // 位置は微調整
   }
 
   public updatePosition(): void {
