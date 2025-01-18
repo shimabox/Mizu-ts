@@ -61,11 +61,11 @@ export class H2 {
     ctx.shadowOffsetY = 1;
     ctx.shadowBlur = 1;
 
+    // "H" と 下付き "2" を分けて描画する
     const fontSize = 24 * this.getScale();
     ctx.font = `${fontSize}px sans-serif`;
-
-    // "H" と 下付き "2" を分けて描画する
     ctx.fillText('H', this.x - this.w / 2, this.y);
+    // 下付き文字を描画
     const fontSize2 = 18 * this.getScale();
     ctx.font = `${fontSize2}px sans-serif`;
     ctx.fillText('2', this.x, this.y + 2);
