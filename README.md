@@ -16,6 +16,8 @@ https://shimabox.github.io/Mizu-ts/?m=1
 
 ## TODO
 
+<details><summary>Fixed.</summary>
+
 - [x] Hを描画
   - [#2](https://github.com/shimabox/Mizu-ts/pull/2)
   - <details><summary>v0.2.0</summary>
@@ -64,6 +66,9 @@ https://shimabox.github.io/Mizu-ts/?m=1
   - https://github.com/shimabox/Mizu-ts/releases/tag/v0.7.1
 - [x] 計測処理実装
   - https://github.com/shimabox/Mizu-ts/pull/9
+
+</details>
+
 - [ ] 改善(interfaceを利用した実装にする, リファクタなど)
 
 ## Prerequisites
