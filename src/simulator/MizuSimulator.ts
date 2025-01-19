@@ -94,29 +94,21 @@ export class MizuSimulator {
   private createHAtom(): H {
     const x = this.cw * Math.random();
     const y = this.ch * Math.random();
-    const h = new H(this.cw, this.ch);
-    h.initializeDrawingProperties(new Coordinate(x, y));
-    return h;
+    return new H(this.cw, this.ch, new Coordinate(x, y));
   }
 
   private createH2Atom(coordinate: Coordinate): H2 {
-    const h2 = new H2(this.cw, this.ch);
-    h2.initializeDrawingProperties(coordinate);
-    return h2;
+    return new H2(this.cw, this.ch, coordinate);
   }
 
   private createOAtom(): O {
     const x = this.cw * Math.random();
     const y = this.ch * Math.random();
-    const o = new O(this.cw, this.ch);
-    o.initializeDrawingProperties(new Coordinate(x, y));
-    return o;
+    return new O(this.cw, this.ch, new Coordinate(x, y));
   }
 
   private createH2oAtom(coordinate: Coordinate): H2o {
-    const h2o = new H2o(this.cw, this.ch);
-    h2o.initializeDrawingProperties(coordinate);
-    return h2o;
+    return new H2o(this.cw, this.ch, coordinate);
   }
 
   private renderH(atoms: H[]): void {

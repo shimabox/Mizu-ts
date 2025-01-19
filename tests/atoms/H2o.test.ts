@@ -7,16 +7,14 @@ describe('H2o クラスのテスト', () => {
   const sh = 600;
 
   it('プロパティが初期化されること', () => {
-    const h2o = new H2o(sw, sh);
-    h2o.initializeDrawingProperties(new Coordinate(100, 200));
+    const h2o = new H2o(sw, sh, new Coordinate(100, 200));
 
     expect(h2o.getX()).toBe(100);
     expect(h2o.getY()).toBe(200);
   });
 
   it('位置が更新され、範囲外に出たとき削除フラグが立つこと', () => {
-    const h2o = new H2o(sw, sh);
-    h2o.initializeDrawingProperties(new Coordinate(100, sh));
+    const h2o = new H2o(sw, sh, new Coordinate(100, sh));
     expect(h2o.isDeleted()).toBe(false);
 
     h2o.updatePosition();
@@ -28,8 +26,7 @@ describe('H2o クラスのテスト', () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Canvas context not available');
 
-    const h2o = new H2o(sw, sh);
-    h2o.initializeDrawingProperties(new Coordinate(300, 400));
+    const h2o = new H2o(sw, sh, new Coordinate(300, 400));
 
     expect(() => h2o.render(ctx)).not.toThrow();
   });

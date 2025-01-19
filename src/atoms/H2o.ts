@@ -10,13 +10,9 @@ export class H2o {
   constructor(
     private sw: number,
     private sh: number,
-  ) {}
-
-  public initializeDrawingProperties(coordinate: Coordinate): void {
-    const w = (Math.random() * 10 + 18) * this.getScale();
-    this.x = coordinate.getX();
-    this.y = coordinate.getY();
-    this.w = w;
+    coordinate: Coordinate,
+  ) {
+    this.initialize(coordinate);
   }
 
   public getX(): number {
@@ -58,6 +54,13 @@ export class H2o {
 
   public isDeleted(): boolean {
     return this.isDeletedFlag;
+  }
+
+  private initialize(coordinate: Coordinate): void {
+    const w = (Math.random() * 10 + 18) * this.getScale();
+    this.x = coordinate.getX();
+    this.y = coordinate.getY();
+    this.w = w;
   }
 
   private getScale(): number {

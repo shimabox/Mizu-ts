@@ -16,24 +16,9 @@ export class O {
   constructor(
     private sw: number,
     private sh: number,
-  ) {}
-
-  public initializeDrawingProperties(coordinate: Coordinate): void {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('Failed to get canvas 2D context');
-    }
-    const fontSize = 24 * this.getScale();
-    ctx.font = `${fontSize}px sans-serif`;
-    const txtSize = ctx.measureText(this.name).width;
-
-    this.x = coordinate.getX();
-    this.y = coordinate.getY();
-    this.w = txtSize;
-    this.h = txtSize;
-    this.r = txtSize / 2;
-    this.color = this.getColor();
+    coordinate: Coordinate,
+  ) {
+    this.initialize(coordinate);
   }
 
   public getX(): number {
@@ -92,6 +77,24 @@ export class O {
     const hitDistance = this.r + target.getRadius(); // 当たり判定の距離を計算 (2つのAtomの半径の和)
 
     return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
+  }
+
+  private initialize(coordinate: Coordinate): void {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Failed to get canvas 2D context');
+    }
+    const fontSize = 24 * this.getScale();
+    ctx.font = `${fontSize}px sans-serif`;
+    const txtSize = ctx.measureText(this.name).width;
+
+    this.x = coordinate.getX();
+    this.y = coordinate.getY();
+    this.w = txtSize;
+    this.h = txtSize;
+    this.r = txtSize / 2;
+    this.color = this.getColor();
   }
 
   private getColor(): string {

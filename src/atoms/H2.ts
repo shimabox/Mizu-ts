@@ -16,25 +16,9 @@ export class H2 {
   constructor(
     private sw: number,
     private sh: number,
-  ) {}
-
-  public initializeDrawingProperties(coordinate: Coordinate): void {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('Failed to get canvas 2D context');
-    }
-    const fontSize = 24 * this.getScale();
-    ctx.font = `${fontSize}px sans-serif`;
-    const txtSize = ctx.measureText(this.name).width;
-
-    // プロパティを設定
-    this.x = coordinate.getX();
-    this.y = coordinate.getY();
-    this.w = txtSize;
-    this.h = txtSize;
-    this.r = txtSize / 2;
-    this.color = this.getColor();
+    coordinate: Coordinate,
+  ) {
+    this.initialize(coordinate);
   }
 
   public getX(): number {
@@ -93,6 +77,25 @@ export class H2 {
 
   public isHit(_: H): boolean {
     return false;
+  }
+
+  private initialize(coordinate: Coordinate): void {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Failed to get canvas 2D context');
+    }
+    const fontSize = 24 * this.getScale();
+    ctx.font = `${fontSize}px sans-serif`;
+    const txtSize = ctx.measureText(this.name).width;
+
+    // プロパティを設定
+    this.x = coordinate.getX();
+    this.y = coordinate.getY();
+    this.w = txtSize;
+    this.h = txtSize;
+    this.r = txtSize / 2;
+    this.color = this.getColor();
   }
 
   private getColor(): string {
