@@ -14,8 +14,8 @@ export class H2o {
 
   public initializeDrawingProperties(coordinate: Coordinate): void {
     const w = (Math.random() * 10 + 18) * this.getScale();
-    this.x = coordinate.x;
-    this.y = coordinate.y;
+    this.x = coordinate.getX();
+    this.y = coordinate.getY();
     this.w = w;
   }
 

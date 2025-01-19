@@ -25,18 +25,14 @@ export class H {
     }
     const fontSize = 24 * this.getScale();
     ctx.font = `${fontSize}px sans-serif`;
-    const txtSize = ctx.measureText(this.getName()).width;
+    const txtSize = ctx.measureText(this.name).width;
 
-    this.x = coordinate.x;
-    this.y = coordinate.y;
+    this.x = coordinate.getX();
+    this.y = coordinate.getY();
     this.w = txtSize;
     this.h = txtSize;
     this.r = txtSize / 2;
     this.color = this.getColor();
-  }
-
-  public getName(): string {
-    return this.name;
   }
 
   public getX(): number {
@@ -62,7 +58,7 @@ export class H {
 
     const fontSize = 24 * this.getScale();
     ctx.font = `${fontSize}px sans-serif`;
-    ctx.fillText(this.getName(), this.x, this.y);
+    ctx.fillText(this.name, this.x, this.y);
   }
 
   public updatePosition(): void {
