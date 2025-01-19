@@ -27,8 +27,8 @@ export class H {
     ctx.font = `${fontSize}px sans-serif`;
     const txtSize = ctx.measureText(this.name).width;
 
-    this.x = coordinate.x;
-    this.y = coordinate.y;
+    this.x = coordinate.getX();
+    this.y = coordinate.getY();
     this.w = txtSize;
     this.h = txtSize;
     this.r = txtSize / 2;

@@ -29,8 +29,8 @@ export class H2 {
     const txtSize = ctx.measureText(this.name).width;
 
     // プロパティを設定
-    this.x = coordinate.x;
-    this.y = coordinate.y;
+    this.x = coordinate.getX();
+    this.y = coordinate.getY();
     this.w = txtSize;
     this.h = txtSize;
     this.r = txtSize / 2;
