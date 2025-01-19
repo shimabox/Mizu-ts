@@ -13,7 +13,6 @@ describe('O クラスのテスト', () => {
 
     expect(o.getX()).toBe(200);
     expect(o.getY()).toBe(300);
-    expect(o.getName()).toBe('O');
   });
 
   it('位置がランダムに更新され、範囲内に収まること', () => {

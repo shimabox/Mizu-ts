@@ -37,10 +37,6 @@ export class H2 {
     this.color = this.getColor();
   }
 
-  public getName(): string {
-    return this.name;
-  }
-
   public getX(): number {
     return this.x;
   }

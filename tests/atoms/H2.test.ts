@@ -13,7 +13,6 @@ describe('H2 クラスのテスト', () => {
 
     expect(h2.getX()).toBe(100);
     expect(h2.getY()).toBe(200);
-    expect(h2.getName()).toBe('H2');
   });
 
   it('Hが衝突してもfalseが返却されること', () => {

@@ -26,7 +26,7 @@ export class O {
     }
     const fontSize = 24 * this.getScale();
     ctx.font = `${fontSize}px sans-serif`;
-    const txtSize = ctx.measureText(this.getName()).width;
+    const txtSize = ctx.measureText(this.name).width;
 
     this.x = coord.x;
     this.y = coord.y;
@@ -34,10 +34,6 @@ export class O {
     this.h = txtSize;
     this.r = txtSize / 2;
     this.color = this.getColor();
-  }
-
-  public getName(): string {
-    return this.name;
   }
 
   public getX(): number {
@@ -86,7 +82,7 @@ export class O {
     ctx.shadowOffsetY = 1;
     ctx.shadowBlur = 1;
 
-    ctx.fillText(this.getName(), this.x, this.y);
+    ctx.fillText(this.name, this.x, this.y);
   }
 
   public isHit(target: H2): boolean {

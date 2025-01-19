@@ -12,7 +12,6 @@ describe('H クラスのテスト', () => {
 
     expect(h.getX()).toBe(100);
     expect(h.getY()).toBe(200);
-    expect(h.getName()).toBe('H');
   });
 
   it('H同士の衝突を正しく判定すること', () => {
