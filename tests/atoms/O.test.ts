@@ -15,10 +15,16 @@ describe('O クラスのテスト', () => {
   });
 
   it('位置がランダムに更新され、範囲内に収まること', () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Canvas context not available');
+    }
+
     const o = new O(sw, sh, new Coordinate(200, 300));
 
     for (let i = 0; i < 100; i++) {
-      o.updatePosition();
+      o.render(ctx);
 
       expect(o.getX()).toBeGreaterThanOrEqual(0);
       expect(o.getX()).toBeLessThanOrEqual(sw);
@@ -30,7 +36,9 @@ describe('O クラスのテスト', () => {
   it('描画処理がエラーなく実行されること', () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('Canvas context not available');
+    if (!ctx) {
+      throw new Error('Canvas context not available');
+    }
 
     const o = new O(sw, sh, new Coordinate(300, 400));
 

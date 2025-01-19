@@ -25,7 +25,6 @@ describe('H クラスのテスト', () => {
   it('描画処理がエラーなく実行されること', () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-
     if (!ctx) {
       throw new Error('Canvas context not available');
     }
@@ -36,12 +35,18 @@ describe('H クラスのテスト', () => {
   });
 
   it('位置がランダムに更新されること', () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Canvas context not available');
+    }
+
     const h = new H(sw, sh, new Coordinate(100, 100));
 
     const initialX = h.getX();
     const initialY = h.getY();
 
-    h.updatePosition();
+    h.render(ctx);
 
     expect(h.getX()).not.toBe(initialX);
     expect(h.getY()).not.toBe(initialY);

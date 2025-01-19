@@ -14,17 +14,25 @@ describe('H2o クラスのテスト', () => {
   });
 
   it('位置が更新され、範囲外に出たとき削除フラグが立つこと', () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Canvas context not available');
+    }
+
     const h2o = new H2o(sw, sh, new Coordinate(100, sh));
     expect(h2o.isDeleted()).toBe(false);
 
-    h2o.updatePosition();
+    h2o.render(ctx);
     expect(h2o.isDeleted()).toBe(true);
   });
 
   it('描画処理がエラーなく実行されること', () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    if (!ctx) throw new Error('Canvas context not available');
+    if (!ctx) {
+      throw new Error('Canvas context not available');
+    }
 
     const h2o = new H2o(sw, sh, new Coordinate(300, 400));
 

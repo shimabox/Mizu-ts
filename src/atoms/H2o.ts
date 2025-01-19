@@ -23,17 +23,12 @@ export class H2o {
     return this.y;
   }
 
-  public updatePosition(): void {
-    const dx = Math.random() * 5;
-    this.x += Math.cos((this.y + dx) / 100);
-    this.y += this.w * 0.1;
-
-    if (this.y >= this.sh) {
-      this.isDeletedFlag = true;
-    }
-  }
-
   public render(ctx: CanvasRenderingContext2D): void {
+    this.updatePosition();
+    if (this.isDeleted()) {
+      return;
+    }
+
     const offset = this.w * 0.4;
     const gx = this.x - offset;
     const gy = this.y - offset;
@@ -61,6 +56,16 @@ export class H2o {
     this.x = coordinate.getX();
     this.y = coordinate.getY();
     this.w = w;
+  }
+
+  private updatePosition(): void {
+    const dx = Math.random() * 5;
+    this.x += Math.cos((this.y + dx) / 100);
+    this.y += this.w * 0.1;
+
+    if (this.y >= this.sh) {
+      this.isDeletedFlag = true;
+    }
   }
 
   private getScale(): number {

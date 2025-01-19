@@ -33,30 +33,9 @@ export class O {
     return this.r;
   }
 
-  public updatePosition(): void {
-    const randomAngle = 2 * Math.PI * Math.random();
-    const speedFactor = 0.075;
-
-    this.vx += speedFactor * Math.cos(randomAngle);
-    this.vy += speedFactor * Math.sin(randomAngle);
-
-    const maxSpeed = 1.05;
-    const currentSpeed = Math.sqrt(this.vx ** 2 + this.vy ** 2);
-    if (currentSpeed > maxSpeed) {
-      this.vx = (this.vx / currentSpeed) * maxSpeed;
-      this.vy = (this.vy / currentSpeed) * maxSpeed;
-    }
-
-    this.x += this.vx;
-    this.y += this.vy;
-
-    if (this.x > this.sw + this.w / 2) this.x = -(this.w / 2);
-    if (this.x + this.w < 0) this.x = this.sw + this.w / 2;
-    if (this.y > this.sh + this.h / 2) this.y = -(this.h / 2);
-    if (this.y + this.h < 0) this.y = this.sh + this.h / 2;
-  }
-
   public render(ctx: CanvasRenderingContext2D): void {
+    this.updatePosition();
+
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const fontSize = 24 * this.getScale();
@@ -95,6 +74,29 @@ export class O {
     this.h = txtSize;
     this.r = txtSize / 2;
     this.color = this.getColor();
+  }
+
+  private updatePosition(): void {
+    const randomAngle = 2 * Math.PI * Math.random();
+    const speedFactor = 0.075;
+
+    this.vx += speedFactor * Math.cos(randomAngle);
+    this.vy += speedFactor * Math.sin(randomAngle);
+
+    const maxSpeed = 1.05;
+    const currentSpeed = Math.sqrt(this.vx ** 2 + this.vy ** 2);
+    if (currentSpeed > maxSpeed) {
+      this.vx = (this.vx / currentSpeed) * maxSpeed;
+      this.vy = (this.vy / currentSpeed) * maxSpeed;
+    }
+
+    this.x += this.vx;
+    this.y += this.vy;
+
+    if (this.x > this.sw + this.w / 2) this.x = -(this.w / 2);
+    if (this.x + this.w < 0) this.x = this.sw + this.w / 2;
+    if (this.y > this.sh + this.h / 2) this.y = -(this.h / 2);
+    if (this.y + this.h < 0) this.y = this.sh + this.h / 2;
   }
 
   private getColor(): string {
