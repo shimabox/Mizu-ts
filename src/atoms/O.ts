@@ -16,24 +16,9 @@ export class O {
   constructor(
     private sw: number,
     private sh: number,
-  ) {}
-
-  public initializeDrawingProperties(coordinate: Coordinate): void {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('Failed to get canvas 2D context');
-    }
-    const fontSize = 24 * this.getScale();
-    ctx.font = `${fontSize}px sans-serif`;
-    const txtSize = ctx.measureText(this.name).width;
-
-    this.x = coordinate.getX();
-    this.y = coordinate.getY();
-    this.w = txtSize;
-    this.h = txtSize;
-    this.r = txtSize / 2;
-    this.color = this.getColor();
+    coordinate: Coordinate,
+  ) {
+    this.initialize(coordinate);
   }
 
   public getX(): number {
@@ -48,30 +33,9 @@ export class O {
     return this.r;
   }
 
-  public updatePosition(): void {
-    const randomAngle = 2 * Math.PI * Math.random();
-    const speedFactor = 0.075;
-
-    this.vx += speedFactor * Math.cos(randomAngle);
-    this.vy += speedFactor * Math.sin(randomAngle);
-
-    const maxSpeed = 1.05;
-    const currentSpeed = Math.sqrt(this.vx ** 2 + this.vy ** 2);
-    if (currentSpeed > maxSpeed) {
-      this.vx = (this.vx / currentSpeed) * maxSpeed;
-      this.vy = (this.vy / currentSpeed) * maxSpeed;
-    }
-
-    this.x += this.vx;
-    this.y += this.vy;
-
-    if (this.x > this.sw + this.w / 2) this.x = -(this.w / 2);
-    if (this.x + this.w < 0) this.x = this.sw + this.w / 2;
-    if (this.y > this.sh + this.h / 2) this.y = -(this.h / 2);
-    if (this.y + this.h < 0) this.y = this.sh + this.h / 2;
-  }
-
   public render(ctx: CanvasRenderingContext2D): void {
+    this.updatePosition();
+
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const fontSize = 24 * this.getScale();
@@ -92,6 +56,47 @@ export class O {
     const hitDistance = this.r + target.getRadius(); // 当たり判定の距離を計算 (2つのAtomの半径の和)
 
     return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
+  }
+
+  private initialize(coordinate: Coordinate): void {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Failed to get canvas 2D context');
+    }
+    const fontSize = 24 * this.getScale();
+    ctx.font = `${fontSize}px sans-serif`;
+    const txtSize = ctx.measureText(this.name).width;
+
+    this.x = coordinate.getX();
+    this.y = coordinate.getY();
+    this.w = txtSize;
+    this.h = txtSize;
+    this.r = txtSize / 2;
+    this.color = this.getColor();
+  }
+
+  private updatePosition(): void {
+    const randomAngle = 2 * Math.PI * Math.random();
+    const speedFactor = 0.075;
+
+    this.vx += speedFactor * Math.cos(randomAngle);
+    this.vy += speedFactor * Math.sin(randomAngle);
+
+    const maxSpeed = 1.05;
+    const currentSpeed = Math.sqrt(this.vx ** 2 + this.vy ** 2);
+    if (currentSpeed > maxSpeed) {
+      this.vx = (this.vx / currentSpeed) * maxSpeed;
+      this.vy = (this.vy / currentSpeed) * maxSpeed;
+    }
+
+    this.x += this.vx;
+    this.y += this.vy;
+
+    if (this.x > this.sw + this.w / 2) this.x = -(this.w / 2);
+    if (this.x + this.w < 0) this.x = this.sw + this.w / 2;
+    if (this.y > this.sh + this.h / 2) this.y = -(this.h / 2);
+    if (this.y + this.h < 0) this.y = this.sh + this.h / 2;
   }
 
   private getColor(): string {

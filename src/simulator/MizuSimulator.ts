@@ -94,35 +94,26 @@ export class MizuSimulator {
   private createHAtom(): H {
     const x = this.cw * Math.random();
     const y = this.ch * Math.random();
-    const h = new H(this.cw, this.ch);
-    h.initializeDrawingProperties(new Coordinate(x, y));
-    return h;
+    return new H(this.cw, this.ch, new Coordinate(x, y));
   }
 
   private createH2Atom(coordinate: Coordinate): H2 {
-    const h2 = new H2(this.cw, this.ch);
-    h2.initializeDrawingProperties(coordinate);
-    return h2;
+    return new H2(this.cw, this.ch, coordinate);
   }
 
   private createOAtom(): O {
     const x = this.cw * Math.random();
     const y = this.ch * Math.random();
-    const o = new O(this.cw, this.ch);
-    o.initializeDrawingProperties(new Coordinate(x, y));
-    return o;
+    return new O(this.cw, this.ch, new Coordinate(x, y));
   }
 
   private createH2oAtom(coordinate: Coordinate): H2o {
-    const h2o = new H2o(this.cw, this.ch);
-    h2o.initializeDrawingProperties(coordinate);
-    return h2o;
+    return new H2o(this.cw, this.ch, coordinate);
   }
 
   private renderH(atoms: H[]): void {
     for (let i = 0; i < atoms.length; i++) {
       const _h = atoms[i];
-      _h.updatePosition();
       _h.render(this.bufferCtx);
 
       for (let j = i + 1; j < atoms.length; j++) {
@@ -146,14 +137,12 @@ export class MizuSimulator {
 
   private renderH2(atoms: H2[]): void {
     for (const _h2 of atoms) {
-      _h2.updatePosition();
       _h2.render(this.bufferCtx);
     }
   }
 
   private renderO(oAtoms: O[], h2Atoms: H2[], h2oAtoms: H2o[]): void {
     for (const _o of oAtoms) {
-      _o.updatePosition();
       _o.render(this.bufferCtx);
 
       for (const _h2 of h2Atoms) {
@@ -187,14 +176,11 @@ export class MizuSimulator {
   private renderH2o(atoms: H2o[]): void {
     for (let i = atoms.length - 1; i >= 0; i--) {
       const _h2o = atoms[i];
-      _h2o.updatePosition();
+      _h2o.render(this.bufferCtx);
 
       if (_h2o.isDeleted()) {
         atoms.splice(i, 1);
-        continue;
       }
-
-      _h2o.render(this.bufferCtx);
     }
   }
 }

@@ -10,13 +10,9 @@ export class H2o {
   constructor(
     private sw: number,
     private sh: number,
-  ) {}
-
-  public initializeDrawingProperties(coordinate: Coordinate): void {
-    const w = (Math.random() * 10 + 18) * this.getScale();
-    this.x = coordinate.getX();
-    this.y = coordinate.getY();
-    this.w = w;
+    coordinate: Coordinate,
+  ) {
+    this.initialize(coordinate);
   }
 
   public getX(): number {
@@ -27,17 +23,12 @@ export class H2o {
     return this.y;
   }
 
-  public updatePosition(): void {
-    const dx = Math.random() * 5;
-    this.x += Math.cos((this.y + dx) / 100);
-    this.y += this.w * 0.1;
-
-    if (this.y >= this.sh) {
-      this.isDeletedFlag = true;
-    }
-  }
-
   public render(ctx: CanvasRenderingContext2D): void {
+    this.updatePosition();
+    if (this.isDeleted()) {
+      return;
+    }
+
     const offset = this.w * 0.4;
     const gx = this.x - offset;
     const gy = this.y - offset;
@@ -58,6 +49,23 @@ export class H2o {
 
   public isDeleted(): boolean {
     return this.isDeletedFlag;
+  }
+
+  private initialize(coordinate: Coordinate): void {
+    const w = (Math.random() * 10 + 18) * this.getScale();
+    this.x = coordinate.getX();
+    this.y = coordinate.getY();
+    this.w = w;
+  }
+
+  private updatePosition(): void {
+    const dx = Math.random() * 5;
+    this.x += Math.cos((this.y + dx) / 100);
+    this.y += this.w * 0.1;
+
+    if (this.y >= this.sh) {
+      this.isDeletedFlag = true;
+    }
   }
 
   private getScale(): number {

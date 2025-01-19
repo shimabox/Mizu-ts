@@ -16,25 +16,9 @@ export class H2 {
   constructor(
     private sw: number,
     private sh: number,
-  ) {}
-
-  public initializeDrawingProperties(coordinate: Coordinate): void {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('Failed to get canvas 2D context');
-    }
-    const fontSize = 24 * this.getScale();
-    ctx.font = `${fontSize}px sans-serif`;
-    const txtSize = ctx.measureText(this.name).width;
-
-    // プロパティを設定
-    this.x = coordinate.getX();
-    this.y = coordinate.getY();
-    this.w = txtSize;
-    this.h = txtSize;
-    this.r = txtSize / 2;
-    this.color = this.getColor();
+    coordinate: Coordinate,
+  ) {
+    this.initialize(coordinate);
   }
 
   public getX(): number {
@@ -50,6 +34,8 @@ export class H2 {
   }
 
   public render(ctx: CanvasRenderingContext2D): void {
+    this.updatePosition();
+
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = this.color;
@@ -68,7 +54,30 @@ export class H2 {
     ctx.fillText('2', this.x + 12, this.y + 3); // 位置は微調整
   }
 
-  public updatePosition(): void {
+  public isHit(_: H): boolean {
+    return false;
+  }
+
+  private initialize(coordinate: Coordinate): void {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Failed to get canvas 2D context');
+    }
+    const fontSize = 24 * this.getScale();
+    ctx.font = `${fontSize}px sans-serif`;
+    const txtSize = ctx.measureText(this.name).width;
+
+    // プロパティを設定
+    this.x = coordinate.getX();
+    this.y = coordinate.getY();
+    this.w = txtSize;
+    this.h = txtSize;
+    this.r = txtSize / 2;
+    this.color = this.getColor();
+  }
+
+  private updatePosition(): void {
     const randomAngle = 2 * Math.PI * Math.random();
     const speedFactor = 0.075;
 
@@ -89,10 +98,6 @@ export class H2 {
     if (this.x + this.w < 0) this.x = this.sw + this.w / 2;
     if (this.y > this.sh + this.h / 2) this.y = -(this.h / 2);
     if (this.y + this.h < 0) this.y = this.sh + this.h / 2;
-  }
-
-  public isHit(_: H): boolean {
-    return false;
   }
 
   private getColor(): string {

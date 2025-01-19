@@ -15,9 +15,49 @@ export class H {
   constructor(
     private sw: number,
     private sh: number,
-  ) {}
+    coordinate: Coordinate,
+  ) {
+    this.initialize(coordinate);
+  }
 
-  public initializeDrawingProperties(coordinate: Coordinate): void {
+  public getX(): number {
+    return this.x;
+  }
+
+  public getY(): number {
+    return this.y;
+  }
+
+  public getRadius(): number {
+    return this.r;
+  }
+
+  public render(ctx: CanvasRenderingContext2D): void {
+    this.updatePosition();
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = '#888';
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    ctx.shadowBlur = 1;
+
+    const fontSize = 24 * this.getScale();
+    ctx.font = `${fontSize}px sans-serif`;
+    ctx.fillText(this.name, this.x, this.y);
+  }
+
+  public isHit(target: H): boolean {
+    const dx = target.getX() - this.x; // ターゲットとのx座標の差分を計算
+    const dy = target.getY() - this.y; // ターゲットとのy座標の差分を計算
+    const distance = Math.sqrt(dx * dx + dy * dy); // ターゲットとの距離を計算 (ピタゴラスの定理を使用)
+    const hitDistance = this.r + target.getRadius(); // 当たり判定の距離を計算 (2つのAtomの半径の和)
+
+    return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
+  }
+
+  private initialize(coordinate: Coordinate): void {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -35,33 +75,7 @@ export class H {
     this.color = this.getColor();
   }
 
-  public getX(): number {
-    return this.x;
-  }
-
-  public getY(): number {
-    return this.y;
-  }
-
-  public getRadius(): number {
-    return this.r;
-  }
-
-  public render(ctx: CanvasRenderingContext2D): void {
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = this.color;
-    ctx.shadowColor = '#888';
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
-    ctx.shadowBlur = 1;
-
-    const fontSize = 24 * this.getScale();
-    ctx.font = `${fontSize}px sans-serif`;
-    ctx.fillText(this.name, this.x, this.y);
-  }
-
-  public updatePosition(): void {
+  private updatePosition(): void {
     const randomAngle = 2 * Math.PI * Math.random();
     const speedFactor = 0.075;
 
@@ -82,15 +96,6 @@ export class H {
     if (this.x + this.w < 0) this.x = this.sw + this.w / 2;
     if (this.y > this.sh + this.h / 2) this.y = -(this.h / 2);
     if (this.y + this.h < 0) this.y = this.sh + this.h / 2;
-  }
-
-  public isHit(target: H): boolean {
-    const dx = target.getX() - this.x; // ターゲットとのx座標の差分を計算
-    const dy = target.getY() - this.y; // ターゲットとのy座標の差分を計算
-    const distance = Math.sqrt(dx * dx + dy * dy); // ターゲットとの距離を計算 (ピタゴラスの定理を使用)
-    const hitDistance = this.r + target.getRadius(); // 当たり判定の距離を計算 (2つのAtomの半径の和)
-
-    return distance < hitDistance; // 距離が当たり判定の距離より小さい場合、衝突していると判定
   }
 
   private getColor(): string {

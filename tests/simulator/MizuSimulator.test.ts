@@ -4,8 +4,11 @@ import { Coordinate } from '../../src/atoms/Coordinate';
 import { H } from '../../src/atoms/H';
 import { H2 } from '../../src/atoms/H2';
 import { H2o } from '../../src/atoms/H2o';
+import { O } from '../../src/atoms/O';
 
 describe('MizuSimulator クラスのテスト', () => {
+  const sw = 800;
+  const sh = 600;
   let simulator: MizuSimulator;
 
   beforeEach(() => {
@@ -57,8 +60,8 @@ describe('MizuSimulator クラスのテスト', () => {
 
   it('H 同士が衝突時に正しく結合されること', () => {
     simulator.init(2, 0);
-    simulator['h'][0].initializeDrawingProperties(new Coordinate(100, 100));
-    simulator['h'][1].initializeDrawingProperties(new Coordinate(105, 105));
+    simulator['h'][0] = new H(sw, sh, new Coordinate(100, 100));
+    simulator['h'][1] = new H(sw, sh, new Coordinate(105, 105));
 
     simulator.renderFrame();
 
@@ -71,10 +74,10 @@ describe('MizuSimulator クラスのテスト', () => {
 
   it('H2とOの衝突時に H2o が生成されること', () => {
     simulator.init(2, 1);
-    simulator['h'][0].initializeDrawingProperties(new Coordinate(100, 100));
-    simulator['h'][1].initializeDrawingProperties(new Coordinate(100, 100));
+    simulator['h'][0] = new H(sw, sh, new Coordinate(100, 100));
+    simulator['h'][1] = new H(sw, sh, new Coordinate(100, 100));
 
-    simulator['o'][0].initializeDrawingProperties(new Coordinate(100, 100));
+    simulator['o'][0] = new O(sw, sh, new Coordinate(100, 100));
 
     simulator.renderFrame();
 
@@ -82,8 +85,7 @@ describe('MizuSimulator クラスのテスト', () => {
   });
 
   it('H2o は画面外に移動したら削除されていること', () => {
-    const h2o = new H2o(800, 600);
-    h2o.initializeDrawingProperties(new Coordinate(800, 600));
+    const h2o = new H2o(sw, sh, new Coordinate(800, 600));
     simulator['h2o'][0] = h2o;
 
     simulator.renderFrame();
