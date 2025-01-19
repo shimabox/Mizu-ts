@@ -24,21 +24,16 @@ export class H2 {
     if (!ctx) {
       throw new Error('Failed to get canvas 2D context');
     }
-
-    // "H" のフォントサイズと幅を計算
-    const fontSizeH = 24 * this.getScale();
-    ctx.font = `${fontSizeH}px sans-serif`; // フォントサイズは 24px としておく
-    const hWidth = ctx.measureText('H').width;
-
-    // "2" のフォントサイズと幅を計算
-    const twoWidth = ctx.measureText('2').width;
+    const fontSize = 24 * this.getScale();
+    ctx.font = `${fontSize}px sans-serif`;
+    const txtSize = ctx.measureText(this.name).width;
 
     // プロパティを設定
     this.x = coordinate.x;
     this.y = coordinate.y;
-    this.w = hWidth + twoWidth;
-    this.h = hWidth;
-    this.r = this.w / 2;
+    this.w = txtSize;
+    this.h = txtSize;
+    this.r = txtSize / 2;
     this.color = this.getColor();
   }
 
