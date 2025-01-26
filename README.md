@@ -92,6 +92,32 @@ curl https://get.volta.sh | bash
 volta install node@18
 ```
 
+### Graphviz (For Dependency Visualization)
+
+For dependency visualization, `dependency-cruiser` is used. To generate visual graphs, you need to install Graphviz.  
+Follow the steps below to install it.
+
+**macOS**
+```sh
+brew install graphviz
+```
+
+**linux**
+
+```sh
+# Ubuntu/Debian
+sudo apt install graphviz
+
+# Fedora
+sudo dnf install graphviz
+```
+
+[Official Graphviz download page](https://www.graphviz.org/download/#linux).
+
+**Windows**
+
+Download the installer from the [official Graphviz download page](https://www.graphviz.org/download/#windows), and follow the setup instructions.
+
 ## Installation
 
 ```sh
@@ -140,4 +166,17 @@ npm run test
 ### Check Test Coverage
 ```sh
 npm run coverage
+```
+
+### Analyze Dependencies
+```sh
+npm run depcruise
+```
+
+### Generate Dependency Graph
+
+This command generates `dependency-graph.svg` in the project root.
+
+```sh
+npm run dependency-graph
 ```
