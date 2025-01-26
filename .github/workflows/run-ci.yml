@@ -29,11 +29,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Install Graphviz
+        run: sudo apt-get install -y graphviz
+
       - name: Build TypeScript
         run: npm run build
 
       - name: Run lint
         run: npm run lint
+
+      - name: Run Dependency Analysis
+        run: npm run depcruise
 
       - name: Run tests with coverage
         run: npm run coverage
@@ -43,3 +49,12 @@ jobs:
         with:
           name: coverage-report
           path: ./coverage
+
+      - name: Generate Dependency Graph
+        run: npm run dependency-graph
+
+      - name: Upload Dependency Graph
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-graph
+          path: dependency-graph.svg
