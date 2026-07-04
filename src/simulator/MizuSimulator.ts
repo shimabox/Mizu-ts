@@ -1,29 +1,27 @@
-import { Coordinate } from '../atoms/Coordinate';
-import { H } from '../atoms/H';
-import { H2 } from '../atoms/H2';
-import { H2o } from '../atoms/H2o';
-import { O } from '../atoms/O';
+import type { ParticleKind } from '../core/Particle';
+import type { ParticleFactory } from '../particles/ParticleFactory';
+import type { CollisionDetector } from '../physics/CollisionDetector';
+import type { ReactionRegistry } from '../reactions/ReactionRegistry';
+import type { World } from './World';
 
+/**
+ * フレームパイプラインの指揮のみを行う。
+ * 具象粒子クラス(H, O, …)は知らず、Factory / Registry 経由でのみ扱う。
+ */
 export class MizuSimulator {
-  private h: H[] = [];
-  private h2: H2[] = [];
-  private o: O[] = [];
-  private h2o: H2o[] = [];
+  private readonly cw: number;
+  private readonly ch: number;
+  private readonly ctx: CanvasRenderingContext2D;
+  private readonly bufferCanvas: HTMLCanvasElement;
+  private readonly bufferCtx: CanvasRenderingContext2D;
 
-  private cw: number;
-  private ch: number;
-  private ctx: CanvasRenderingContext2D;
-  private bufferCanvas: HTMLCanvasElement;
-  private bufferCtx: CanvasRenderingContext2D;
-
-  constructor() {
-    const canvas = document.querySelector<HTMLCanvasElement>('#myCanvas');
-    if (!canvas) {
-      throw new Error('Canvas element not found');
-    }
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+  constructor(
+    canvas: HTMLCanvasElement,
+    private readonly world: World,
+    private readonly factory: ParticleFactory,
+    private readonly registry: ReactionRegistry,
+    private readonly collisionDetector: CollisionDetector,
+  ) {
     this.cw = canvas.width;
     this.ch = canvas.height;
 
@@ -46,23 +44,54 @@ export class MizuSimulator {
 
   public init(hCount: number, oCount: number): void {
     for (let i = 0; i < hCount; i++) {
-      this.h.push(this.createHAtom());
+      this.world.add(this.factory.createHAtRandom());
     }
     for (let i = 0; i < oCount; i++) {
-      this.o.push(this.createOAtom());
+      this.world.add(this.factory.createOAtRandom());
     }
   }
 
   public renderFrame(): void {
+    // 1. 更新
+    for (const p of this.world.all()) {
+      p.update();
+    }
+
+    // 2. 衝突検出
+    const pairs = this.collisionDetector.findHitPairs(this.world.all());
+
+    // 3. 反応適用
+    for (const [a, b] of pairs) {
+      if (a.isDead() || b.isDead()) {
+        continue; // 同一フレーム多重反応の防止
+      }
+      const rule = this.registry.find(a.kind, b.kind);
+      if (!rule) {
+        continue;
+      }
+      const result = rule.react(a, b);
+      for (const c of result.consumed) {
+        c.markDead();
+      }
+      for (const p of result.produced) {
+        this.world.add(p);
+      }
+    }
+
+    // 4. 死亡回収(1 パス)
+    this.world.sweep();
+
+    // 5. 描画
     this.bufferCtx.fillStyle = '#fff';
     this.bufferCtx.fillRect(0, 0, this.cw, this.ch);
-
-    this.renderH(this.h);
-    this.renderH2(this.h2);
-    this.renderO(this.o, this.h2, this.h2o);
-    this.renderH2o(this.h2o);
-
+    for (const p of this.world.all()) {
+      p.render(this.bufferCtx);
+    }
     this.ctx.drawImage(this.bufferCanvas, 0, 0);
+  }
+
+  public count(kind: ParticleKind): number {
+    return this.world.count(kind);
   }
 
   public getScale(): number {
@@ -73,114 +102,5 @@ export class MizuSimulator {
       return 1.2;
     }
     return 1.5;
-  }
-
-  public getHLength(): number {
-    return this.h.length;
-  }
-
-  public getH2Length(): number {
-    return this.h2.length;
-  }
-
-  public getOLength(): number {
-    return this.o.length;
-  }
-
-  public getH2oLength(): number {
-    return this.h2o.length;
-  }
-
-  private createHAtom(): H {
-    const x = this.cw * Math.random();
-    const y = this.ch * Math.random();
-    return new H(this.cw, this.ch, new Coordinate(x, y));
-  }
-
-  private createH2Atom(coordinate: Coordinate): H2 {
-    return new H2(this.cw, this.ch, coordinate);
-  }
-
-  private createOAtom(): O {
-    const x = this.cw * Math.random();
-    const y = this.ch * Math.random();
-    return new O(this.cw, this.ch, new Coordinate(x, y));
-  }
-
-  private createH2oAtom(coordinate: Coordinate): H2o {
-    return new H2o(this.cw, this.ch, coordinate);
-  }
-
-  private renderH(atoms: H[]): void {
-    for (let i = 0; i < atoms.length; i++) {
-      const _h = atoms[i];
-      _h.render(this.bufferCtx);
-
-      for (let j = i + 1; j < atoms.length; j++) {
-        const target = atoms[j];
-        if (!_h.isHit(target)) {
-          continue;
-        }
-
-        // 衝突したtargetはH2として生成し直し
-        const coordinate = new Coordinate(target.getX(), target.getY());
-        this.h2.push(this.createH2Atom(coordinate));
-
-        // 衝突したもう片方(H2にしていないほう)は作り直し
-        atoms[i] = this.createHAtom();
-
-        // H2となったtargetは削除
-        atoms.splice(j, 1);
-      }
-    }
-  }
-
-  private renderH2(atoms: H2[]): void {
-    for (const _h2 of atoms) {
-      _h2.render(this.bufferCtx);
-    }
-  }
-
-  private renderO(oAtoms: O[], h2Atoms: H2[], h2oAtoms: H2o[]): void {
-    for (const _o of oAtoms) {
-      _o.render(this.bufferCtx);
-
-      for (const _h2 of h2Atoms) {
-        if (!_o.isHit(_h2)) {
-          continue;
-        }
-
-        // 水になった酸素原子は詰め替える
-        const oIndex = oAtoms.indexOf(_o);
-        if (oIndex >= 0) {
-          // ループ中にすでに消えているケースがある
-          oAtoms[oIndex] = this.createOAtom();
-        }
-
-        // 水になった水素原子は削除
-        const h2Index = h2Atoms.indexOf(_h2);
-        if (h2Index >= 0) {
-          // ループ中にすでに消えているケースがある
-          h2Atoms.splice(h2Index, 1);
-        }
-
-        // 水になった水素原子は新しく生成しなおす
-        this.h.push(this.createHAtom());
-
-        // 水生成
-        h2oAtoms.push(this.createH2oAtom(new Coordinate(_o.getX(), _o.getY())));
-      }
-    }
-  }
-
-  private renderH2o(atoms: H2o[]): void {
-    for (let i = atoms.length - 1; i >= 0; i--) {
-      const _h2o = atoms[i];
-      _h2o.render(this.bufferCtx);
-
-      if (_h2o.isDeleted()) {
-        atoms.splice(i, 1);
-      }
-    }
   }
 }
