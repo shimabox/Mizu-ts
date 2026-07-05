@@ -12,7 +12,8 @@
     "test": "vitest",
     "coverage": "vitest --coverage",
     "depcruise": "npx depcruise src",
-    "dependency-graph": "npx depcruise src --include-only \"^src\" --output-type dot | dot -T svg > dependency-graph.svg"
+    "dependency-graph": "npx depcruise src --include-only \"^src\" --output-type dot | dot -T svg > dependency-graph.svg",
+    "bench": "node scripts/bench/bench.mjs"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +29,7 @@
     "canvas": "^3.0.1",
     "dependency-cruiser": "^16.9.0",
     "jsdom": "^26.0.0",
+    "puppeteer-core": "^23.11.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
     "vite": "^6.0.7",
