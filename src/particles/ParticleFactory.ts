@@ -1,6 +1,7 @@
 import type { Random } from '../core/Random';
 import { FallAndSway } from '../core/behaviors/FallAndSway';
 import { RandomWalk } from '../core/behaviors/RandomWalk';
+import { RiseAndSway } from '../core/behaviors/RiseAndSway';
 import { DropletRenderer } from '../core/renderers/DropletRenderer';
 import { SubscriptTextRenderer } from '../core/renderers/SubscriptTextRenderer';
 import { TextRenderer } from '../core/renderers/TextRenderer';
@@ -96,11 +97,12 @@ export class ParticleFactory {
 
   public createO3(x: number, y: number): O3 {
     const size = this.measureTextWidth('O3');
+    const lifespanFrames = 240 + this.random.next() * 120; // 約4〜6秒 @ 60fps
     return new O3(
       x,
       y,
       size / 2,
-      new RandomWalk(this.sw, this.sh, size, this.random),
+      new RiseAndSway(size, this.random),
       new SubscriptTextRenderer(
         'O',
         '3',
@@ -109,6 +111,7 @@ export class ParticleFactory {
         18 * this.getScale(),
         size,
       ),
+      lifespanFrames,
     );
   }
 
