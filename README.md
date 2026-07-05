@@ -130,14 +130,14 @@ npm run bench -- --scenarios default,500 --frames 60 --warmup 1000
 - Node.js >= 18.0.0
 - npm >= 9.0.0
 
-[Volta](https://volta.sh/) is a convenient tool for managing Node.js and npm versions:
+[mise](https://mise.jdx.dev/) is a convenient tool for managing Node.js versions. The project's Node.js version is pinned in `mise.toml`:
 
 ```sh
-# Install Volta
-curl https://get.volta.sh | bash
+# Install mise
+curl https://mise.run | sh
 
-# Install Node.js and npm
-volta install node@18
+# Install the pinned Node.js version (reads mise.toml)
+mise install
 ```
 
 ### Graphviz (For Dependency Visualization)

@@ -1,0 +1,4 @@
+# Node.js のバージョン管理(https://mise.jdx.dev/)
+# `mise install` でこのバージョンがプロジェクトに入る
+[tools]
+node = "18.20.5"

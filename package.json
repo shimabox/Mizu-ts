@@ -18,10 +18,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "volta": {
-    "node": "18.20.5",
-    "npm": "9.9.4"
-  },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@types/jsdom": "^21.1.7",
