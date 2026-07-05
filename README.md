@@ -118,10 +118,12 @@ npm run bench -- --scenarios default,500 --frames 60 --warmup 1000
   - https://github.com/shimabox/Mizu-ts/releases/tag/v0.7.1
 - [x] 計測処理実装
   - https://github.com/shimabox/Mizu-ts/pull/9
+- [x] 改善(interfaceを利用した実装にする, リファクタなど)
+  - [#21](https://github.com/shimabox/Mizu-ts/pull/21) 計測オーバーレイの刷新
+  - [#22](https://github.com/shimabox/Mizu-ts/pull/22) ベンチマークツールの追加
+  - [#23](https://github.com/shimabox/Mizu-ts/pull/23) シミュレーション本体の再設計(設計の詳細は [.claude/docs/architecture.md](./.claude/docs/architecture.md))
 
 </details>
-
-- [ ] 改善(interfaceを利用した実装にする, リファクタなど)
 
 ## Prerequisites
 
