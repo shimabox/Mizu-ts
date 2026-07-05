@@ -1,5 +1,5 @@
+import { StatsOverlay } from './debug/StatsOverlay';
 import { MizuSimulator } from './simulator/MizuSimulator';
-import { Measurement } from './util/Measurement';
 
 const query = window.location.search;
 const urlParams = new URLSearchParams(query);
@@ -17,19 +17,28 @@ window.addEventListener('DOMContentLoaded', () => {
   const scale = simulator.getScale();
   simulator.init(hCount * scale, oCount * scale);
 
-  const loop = () => {
-    if (isMeasureMode) {
-      Measurement.factory()
-        .measure(() => simulator.renderFrame())
-        .add(`H: ${simulator.getHLength()}`)
-        .add(`H2: ${simulator.getH2Length()}`)
-        .add(`O: ${simulator.getOLength()}`)
-        .add(`H2o: ${simulator.getH2oLength()}`)
-        .render();
+  const overlay = isMeasureMode ? new StatsOverlay() : null;
+
+  const loop = (timestamp: DOMHighResTimeStamp) => {
+    if (isMeasureMode && overlay) {
+      overlay.frame(timestamp);
+      const start = performance.now();
+      simulator.renderFrame();
+      const end = performance.now();
+      overlay.setFrameTime(end - start);
+
+      const counts = new Map<string, number>();
+      counts.set('H', simulator.getHLength());
+      counts.set('H2', simulator.getH2Length());
+      counts.set('O', simulator.getOLength());
+      counts.set('H2o', simulator.getH2oLength());
+      overlay.setStats(counts);
+
+      overlay.render();
     } else {
       simulator.renderFrame();
     }
     requestAnimationFrame(loop);
   };
-  loop();
+  requestAnimationFrame(loop);
 });
