@@ -11,23 +11,38 @@ const VIEWPORT = { width: 1280, height: 800 };
  * ブラウザウィンドウで行う。
  */
 export async function launchBrowser() {
-  return puppeteer.launch({
-    channel: 'chrome',
-    headless: false,
-    defaultViewport: VIEWPORT,
-    args: [
-      `--window-size=${VIEWPORT.width},${VIEWPORT.height}`,
-      '--window-position=0,0',
-    ],
-    // puppeteer は既定で SIGINT/SIGTERM/SIGHUP を自前でハンドリングしてブラウザを
-    // 閉じようとする。bench.mjs 側にも Ctrl+C 用の後片付けハンドラ(vite サーバー・
-    // worktree も含めて片付ける)があり、両方が同時にブラウザを閉じようとすると
-    // 競合して browser.close() が正しく解決しなくなることがある。シグナル処理は
-    // bench.mjs 側に一本化する。
-    handleSIGINT: false,
-    handleSIGTERM: false,
-    handleSIGHUP: false,
-  });
+  return puppeteer
+    .launch({
+      channel: 'chrome',
+      headless: false,
+      defaultViewport: VIEWPORT,
+      args: [
+        `--window-size=${VIEWPORT.width},${VIEWPORT.height}`,
+        '--window-position=0,0',
+      ],
+      // puppeteer は既定で SIGINT/SIGTERM/SIGHUP を自前でハンドリングしてブラウザを
+      // 閉じようとする。bench.mjs 側にも Ctrl+C 用の後片付けハンドラ(vite サーバー・
+      // worktree も含めて片付ける)があり、両方が同時にブラウザを閉じようとすると
+      // 競合して browser.close() が正しく解決しなくなることがある。シグナル処理は
+      // bench.mjs 側に一本化する。
+      handleSIGINT: false,
+      handleSIGTERM: false,
+      handleSIGHUP: false,
+    })
+    .catch((err) => {
+      // Chrome が見つからない場合、puppeteer-core の生エラーは分かりにくいため
+      // 前提条件を日本語で案内する
+      throw new Error(
+        [
+          'Chrome の起動に失敗しました。以下を確認してください:',
+          '  1. Google Chrome がインストールされていること',
+          '     (このツールは Chromium を同梱せず、インストール済みの Chrome を使います)',
+          '  2. GUI 環境で実行していること',
+          '     (計測精度のためヘッドフル起動が必須。SSH 先やディスプレイのない環境では動きません)',
+          `元のエラー: ${err.message}`,
+        ].join('\n'),
+      );
+    });
 }
 
 /**

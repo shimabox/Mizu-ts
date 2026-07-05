@@ -50,6 +50,8 @@ Note: Frame time measurement uses high-precision timestamps (1ms decimal), allow
 
 `npm run bench` automates the manual measurement protocol above: it starts Vite, opens a real (headful) Chrome window, measures rAF frame times per scenario, and writes a Markdown report to `bench-reports/`. Pass `--compare <git-ref>` to A/B compare the current working tree against another ref (checked out into a temporary `git worktree`).
 
+Requires Google Chrome and a GUI environment — see [Google Chrome (For Benchmark Tool)](#google-chrome-for-benchmark-tool).
+
 ```sh
 npm run bench
 npm run bench -- --compare main
@@ -161,6 +163,12 @@ sudo dnf install graphviz
 **Windows**
 
 Download the installer from the [official Graphviz download page](https://www.graphviz.org/download/#windows), and follow the setup instructions.
+
+### Google Chrome (For Benchmark Tool)
+
+The benchmark tool (`npm run bench`) launches your locally installed **Google Chrome** via `puppeteer-core` (no Chromium is bundled), so Chrome must be installed.
+
+It runs the browser **headful** on purpose — headless rendering paths differ and can invert benchmark conclusions — so a GUI environment is required (it does not work over SSH or on displayless CI machines).
 
 ## Installation
 
