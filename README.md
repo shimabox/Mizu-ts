@@ -45,7 +45,6 @@ Note: Frame time measurement uses high-precision timestamps (1ms decimal), allow
 |m|0|number|Show performance overlay if set to 1|
 |h|30|number|Number of H atoms to generate (scaled by screen width)|
 |o|50|number|Number of O atoms to generate (scaled by screen width)|
-|o3|0|number|Enable O3 (ozone) formation reaction if set to 1|
 
 ## TODO
 

@@ -8,7 +8,6 @@ import { H } from './H';
 import { H2 } from './H2';
 import { H2o } from './H2o';
 import { O } from './O';
-import { O3 } from './O3';
 
 /**
  * 粒子の生成を一元化する Factory。
@@ -91,31 +90,6 @@ export class ParticleFactory {
       size / 2,
       new FallAndSway(this.sh, size, this.random),
       new DropletRenderer(size),
-    );
-  }
-
-  public createO3(x: number, y: number): O3 {
-    const size = this.measureTextWidth('O3');
-    return new O3(
-      x,
-      y,
-      size / 2,
-      new RandomWalk(this.sw, this.sh, size, this.random),
-      new SubscriptTextRenderer(
-        'O',
-        '3',
-        this.randomColor(),
-        this.baseFontSize(),
-        18 * this.getScale(),
-        size,
-      ),
-    );
-  }
-
-  public createO3AtRandom(): O3 {
-    return this.createO3(
-      this.sw * this.random.next(),
-      this.sh * this.random.next(),
     );
   }
 

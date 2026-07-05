@@ -13,16 +13,15 @@ describe('ParticleFactory のテスト', () => {
   const createFactory = (width = sw, seed = 42) =>
     new ParticleFactory(width, sh, new SeededRandom(seed));
 
-  it('createH / createH2 / createO / createO3 / createH2o が指定座標で生成すること', () => {
+  it('createH / createH2 / createO / createH2o が指定座標で生成すること', () => {
     const factory = createFactory();
     expect(factory.createH(10, 20).getX()).toBe(10);
     expect(factory.createH2(30, 40).getY()).toBe(40);
     expect(factory.createO(50, 60).getX()).toBe(50);
-    expect(factory.createO3(70, 80).getX()).toBe(70);
-    expect(factory.createH2o(90, 100).getY()).toBe(100);
+    expect(factory.createH2o(70, 80).getY()).toBe(80);
   });
 
-  it('createHAtRandom / createOAtRandom / createO3AtRandom が画面内の座標で生成すること', () => {
+  it('createHAtRandom / createOAtRandom が画面内の座標で生成すること', () => {
     const factory = createFactory();
     for (let i = 0; i < 20; i++) {
       const h = factory.createHAtRandom();
@@ -36,12 +35,6 @@ describe('ParticleFactory のテスト', () => {
       expect(o.getX()).toBeLessThan(sw);
       expect(o.getY()).toBeGreaterThanOrEqual(0);
       expect(o.getY()).toBeLessThan(sh);
-
-      const o3 = factory.createO3AtRandom();
-      expect(o3.getX()).toBeGreaterThanOrEqual(0);
-      expect(o3.getX()).toBeLessThan(sw);
-      expect(o3.getY()).toBeGreaterThanOrEqual(0);
-      expect(o3.getY()).toBeLessThan(sh);
     }
   });
 

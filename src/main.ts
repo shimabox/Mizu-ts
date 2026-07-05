@@ -6,14 +6,12 @@ import { DEFAULT_CELL_SIZE, SpatialGrid } from './physics/SpatialGrid';
 import { ReactionRegistry } from './reactions/ReactionRegistry';
 import { HHFusion } from './reactions/rules/HHFusion';
 import { OxidationToWater } from './reactions/rules/OxidationToWater';
-import { OzoneFormation } from './reactions/rules/OzoneFormation';
 import { MizuSimulator } from './simulator/MizuSimulator';
 import { World } from './simulator/World';
 
 const query = window.location.search;
 const urlParams = new URLSearchParams(query);
 const isMeasureMode = urlParams.get('m') === '1';
-const isO3Enabled = urlParams.get('o3') === '1';
 
 const getSafeNumber = (param: string | null, defaultValue: number): number => {
   const value = Number.parseInt(param || '', 10);
@@ -36,9 +34,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const registry = new ReactionRegistry();
   registry.register(new HHFusion(factory));
   registry.register(new OxidationToWater(factory));
-  if (isO3Enabled) {
-    registry.register(new OzoneFormation(factory));
-  }
 
   const grid = new SpatialGrid(canvas.width, canvas.height, DEFAULT_CELL_SIZE);
   const simulator = new MizuSimulator(
@@ -68,9 +63,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
       // Collect particle counts by kind (always show all kinds, even at 0)
       const stats = new Map<string, number>();
-      const allKinds = isO3Enabled
-        ? ['H', 'H2', 'O', 'H2o', 'O3']
-        : ['H', 'H2', 'O', 'H2o'];
+      const allKinds = ['H', 'H2', 'O', 'H2o'];
       for (const kind of allKinds) {
         stats.set(kind, simulator.count(kind));
       }

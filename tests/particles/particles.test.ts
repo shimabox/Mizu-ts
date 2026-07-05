@@ -20,7 +20,6 @@ describe.each([
   ['H', (f: ParticleFactory) => f.createH(100, 200)],
   ['H2', (f: ParticleFactory) => f.createH2(100, 200)],
   ['O', (f: ParticleFactory) => f.createO(100, 200)],
-  ['O3', (f: ParticleFactory) => f.createO3(100, 200)],
 ] as const)('%s クラスのテスト', (kind, create) => {
   it('プロパティが初期化されること', () => {
     const p = create(createFactory());
