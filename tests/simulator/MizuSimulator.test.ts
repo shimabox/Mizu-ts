@@ -9,6 +9,7 @@ import { HHFusion } from '../../src/reactions/rules/HHFusion';
 import { OxidationToWater } from '../../src/reactions/rules/OxidationToWater';
 import { MizuSimulator } from '../../src/simulator/MizuSimulator';
 import { World } from '../../src/simulator/World';
+import { FakeParticle } from '../helpers/FakeParticle';
 
 const createSimulator = (width = 800, height = 600, seed = 42) => {
   const canvas = document.createElement('canvas');
@@ -189,6 +190,32 @@ describe('MizuSimulator クラスのテスト', () => {
     expect(kinds).toContain('O');
     expect(kinds).toContain('H2');
     expect(kinds).not.toContain('H2o'); // どのルールの pair にも現れない kind は除外
+  });
+
+  it('描画が kind ごとにまとまって実行されること(world 配列順で交互に混ざらない)', () => {
+    // 描画種別(テキストスプライトの drawImage / 水滴のグラデーション fill)が
+    // 粒子ごとに交互に切り替わるとラスタライズが大幅に遅くなるため、
+    // MizuSimulator は kind ごとにグループ化して描画する
+    const { simulator, world } = createSimulator();
+
+    const order: string[] = [];
+    class RecordingParticle extends FakeParticle {
+      public render(_ctx: CanvasRenderingContext2D): void {
+        order.push(this.kind);
+      }
+    }
+
+    // kind が交互に並ぶよう追加する
+    world.add(new RecordingParticle('A', 10, 10, 5));
+    world.add(new RecordingParticle('B', 100, 100, 5));
+    world.add(new RecordingParticle('A', 200, 200, 5));
+    world.add(new RecordingParticle('B', 300, 300, 5));
+    world.add(new RecordingParticle('A', 400, 400, 5));
+
+    simulator.renderFrame();
+
+    // world 配列順(A,B,A,B,A)ではなく、初出順の kind ごとにまとまる
+    expect(order).toEqual(['A', 'A', 'A', 'B', 'B']);
   });
 
   it('画面サイズによって scale が正しい値を返すこと', () => {

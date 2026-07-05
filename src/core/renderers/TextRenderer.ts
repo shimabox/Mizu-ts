@@ -1,8 +1,11 @@
 import type { ParticleRenderer } from './ParticleRenderer';
 
 /**
- * 影付きテキスト描画(H, O 用)。
- * 旧 atoms/H.ts / O.ts の render() の描画部分をそのまま移植したもの。
+ * 影付きテキスト描画(H, O 用)。毎フレーム fillText で直描きする。
+ *
+ * スプライトキャッシュ(オフスクリーン canvas + drawImage)は実ブラウザ計測で
+ * フレーム全体のラスタライズが退行したため不採用(詳細は
+ * .claude/docs/redesign-plan.md §2.3)。
  */
 export class TextRenderer implements ParticleRenderer {
   constructor(

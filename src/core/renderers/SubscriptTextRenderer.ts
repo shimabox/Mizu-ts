@@ -1,8 +1,11 @@
 import type { ParticleRenderer } from './ParticleRenderer';
 
 /**
- * 下付き文字付きテキスト描画(H2 用)。
- * 旧 atoms/H2.ts の render() の描画部分をそのまま移植したもの。
+ * 下付き文字付きテキスト描画(H2 用)。毎フレーム fillText で直描きする。
+ *
+ * スプライトキャッシュ(オフスクリーン canvas + drawImage)は実ブラウザ計測で
+ * フレーム全体のラスタライズが退行したため不採用(詳細は
+ * .claude/docs/redesign-plan.md §2.3)。
  */
 export class SubscriptTextRenderer implements ParticleRenderer {
   constructor(
