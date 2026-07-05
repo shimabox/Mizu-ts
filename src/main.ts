@@ -1,6 +1,7 @@
 import { MathRandom } from './core/Random';
 import { ParticleFactory } from './particles/ParticleFactory';
-import { BruteForceCollisionDetector } from './physics/BruteForceCollisionDetector';
+import { GridCollisionDetector } from './physics/GridCollisionDetector';
+import { DEFAULT_CELL_SIZE, SpatialGrid } from './physics/SpatialGrid';
 import { ReactionRegistry } from './reactions/ReactionRegistry';
 import { HHFusion } from './reactions/rules/HHFusion';
 import { OxidationToWater } from './reactions/rules/OxidationToWater';
@@ -34,12 +35,13 @@ window.addEventListener('DOMContentLoaded', () => {
   registry.register(new HHFusion(factory));
   registry.register(new OxidationToWater(factory));
 
+  const grid = new SpatialGrid(canvas.width, canvas.height, DEFAULT_CELL_SIZE);
   const simulator = new MizuSimulator(
     canvas,
     new World(),
     factory,
     registry,
-    new BruteForceCollisionDetector(),
+    new GridCollisionDetector(grid),
   );
 
   const scale = simulator.getScale();
