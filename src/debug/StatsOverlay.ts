@@ -1,15 +1,15 @@
 /**
- * Statistics overlay for debugging and performance monitoring.
- * Displays FPS (60-frame moving average), frame interval, renderFrame
- * execution time, kind-wise particle counts, and total count.
+ * デバッグとパフォーマンス計測用の統計情報オーバーレイ。
+ * FPS (直近60フレームの移動平均)、フレーム間隔、renderFrame の実行時間、
+ * 種別ごとの粒子数、および合計粒子数をリアルタイム表示する。
  *
- * Usage:
+ * 使用方法:
  *   const overlay = new StatsOverlay();
- *   // In animation loop:
- *   overlay.frame(timestamp);     // from requestAnimationFrame (FPS / interval)
- *   overlay.setFrameTime(ms);     // renderFrame() execution time (JS time)
- *   overlay.setStats(counts);     // Map<kind, count>
- *   overlay.render();             // Update DOM display
+ *   // アニメーションループ内で:
+ *   overlay.frame(timestamp);     // requestAnimationFrame から (FPS / 間隔計算)
+ *   overlay.setFrameTime(ms);     // renderFrame() の実行時間 (JS 計測)
+ *   overlay.setStats(counts);     // Map<種別名, 粒子数>
+ *   overlay.render();             // DOM 表示を更新
  */
 export class StatsOverlay {
   private frameIntervals: number[] = [];
@@ -36,42 +36,42 @@ export class StatsOverlay {
   }
 
   /**
-   * Update FPS calculation with a new frame timestamp.
-   * Call this with each requestAnimationFrame callback.
+   * 新しいフレームのタイムスタンプで FPS 計算を更新する。
+   * requestAnimationFrame のコールバック毎に呼び出す。
    *
-   * @param timestamp - The DOMHighResTimeStamp from requestAnimationFrame
+   * @param timestamp - requestAnimationFrame から受け取った DOMHighResTimeStamp
    */
   public frame(timestamp: number): void {
     if (this.lastTimestamp !== null) {
       const interval = timestamp - this.lastTimestamp;
       this.frameIntervals.push(interval);
 
-      // Keep only the last 60 frame intervals (for 60-frame moving average)
+      // 直近60フレーム分の間隔のみ保持(60フレーム移動平均の計算用)
       if (this.frameIntervals.length > 60) {
         this.frameIntervals.shift();
       }
 
-      // Store the current frame interval
+      // 現在のフレーム間隔を保存
       this.frameInterval = interval;
     }
     this.lastTimestamp = timestamp;
   }
 
   /**
-   * Set the execution time of the frame update (e.g. renderFrame()).
-   * This is distinct from the frame interval: the interval is the wall time
-   * between rAF callbacks, while this is the JS time spent in the update.
+   * フレーム更新処理(例: renderFrame())の実行時間を設定する。
+   * フレーム間隔とは別概念：間隔は rAF コールバック間の実際の経過時間、
+   * 一方これは JS の処理に費やされた時間を計測する。
    *
-   * @param ms - Execution time in milliseconds
+   * @param ms - 実行時間(ミリ秒)
    */
   public setFrameTime(ms: number): void {
     this.updateTime = ms;
   }
 
   /**
-   * Set particle counts by kind.
+   * 種別ごとの粒子数を設定する。
    *
-   * @param stats - Map of particle kind to count
+   * @param stats - 粒子種別から個数へのマップ
    */
   public setStats(stats: Map<string, number>): void {
     this.currentStats = stats;
@@ -82,9 +82,9 @@ export class StatsOverlay {
   }
 
   /**
-   * Calculate FPS from the last 60 frame intervals.
+   * 直近60フレーム間隔から FPS を計算する。
    *
-   * @returns FPS value, or 0 if insufficient data
+   * @returns FPS の値、または データ不足の場合は 0
    */
   private getFPS(): number {
     if (this.frameIntervals.length === 0) {
@@ -105,37 +105,37 @@ export class StatsOverlay {
   }
 
   /**
-   * Update the overlay DOM with current stats.
-   * Call this after setStats() in each frame.
+   * オーバーレイ DOM を現在の統計情報で更新する。
+   * 各フレーム内で setStats() の後に呼び出す。
    */
   public render(): void {
     const fps = this.getFPS();
     const lines: string[] = [];
 
-    // FPS with 1 decimal place
+    // 小数第1位の FPS
     lines.push(`FPS: ${fps.toFixed(1)}`);
 
-    // Frame interval (rAF timestamp delta) with 1 decimal place
+    // フレーム間隔 (rAF タイムスタンプの差分) 小数第1位
     lines.push(`Frame: ${this.frameInterval.toFixed(1)}ms`);
 
-    // renderFrame execution time (JS time) with 1 decimal place
-    // (avoids flooring like the old Math.floor approach: 0.58 → 0.6, not 0)
+    // renderFrame の実行時間 (JS 計測) 小数第1位
+    // (Math.floor と異なり、0.58 は 0.5 または 0.6 に丸められ 0 にはならない)
     lines.push(`Update: ${this.updateTime.toFixed(1)}ms`);
 
-    // Kind-wise particle counts (in insertion order of the map)
+    // 種別ごとの粒子数(マップの挿入順序を保持)
     for (const [kind, count] of this.currentStats.entries()) {
       lines.push(`${kind}: ${count}`);
     }
 
-    // Total particle count
+    // 総粒子数
     lines.push(`Total: ${this.totalCount}`);
 
     this.overlayElement.innerText = lines.join('\n');
   }
 
   /**
-   * Remove the overlay from the DOM.
-   * Useful for cleanup or testing.
+   * DOM からオーバーレイを削除する。
+   * クリーンアップやテスト時に有用。
    */
   public remove(): void {
     if (this.overlayElement.parentNode) {
@@ -144,10 +144,10 @@ export class StatsOverlay {
   }
 
   /**
-   * Get the current display text (for testing purposes).
-   * Returns the text that would be shown in the overlay.
+   * 現在の表示テキストを取得する (テスト目的)。
+   * オーバーレイに表示されるテキストを返す。
    *
-   * @returns The display text
+   * @returns 表示テキスト
    */
   public getText(): string {
     return this.overlayElement.innerText;
