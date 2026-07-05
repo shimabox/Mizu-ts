@@ -1,4 +1,4 @@
-import type { ParticleKind } from '../core/Particle';
+import type { Particle, ParticleKind } from '../core/Particle';
 import type { ParticleFactory } from '../particles/ParticleFactory';
 import type { CollisionDetector } from '../physics/CollisionDetector';
 import type { ReactionRegistry } from '../reactions/ReactionRegistry';
@@ -14,6 +14,12 @@ export class MizuSimulator {
   private readonly ctx: CanvasRenderingContext2D;
   private readonly bufferCanvas: HTMLCanvasElement;
   private readonly bufferCtx: CanvasRenderingContext2D;
+  /**
+   * 反応に関与しうる kind の集合(Registry の読み取り専用ビュー)。
+   * どのルールにも現れない kind(例: H2o)は衝突判定に渡さない。
+   * Registry が返すのはライブビューなので毎フレーム作り直す必要はない。
+   */
+  private readonly reactiveKinds: ReadonlySet<ParticleKind>;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -24,6 +30,7 @@ export class MizuSimulator {
   ) {
     this.cw = canvas.width;
     this.ch = canvas.height;
+    this.reactiveKinds = registry.reactiveKinds();
 
     const ctx = canvas.getContext('2d');
     if (!ctx) {
@@ -57,8 +64,15 @@ export class MizuSimulator {
       p.update();
     }
 
-    // 2. 衝突検出
-    const pairs = this.collisionDetector.findHitPairs(this.world.all());
+    // 2. 衝突検出(反応に関与しうる kind のみ。H2o 等の不活性粒子は
+    //    大量に滞留するため、渡すとグリッド挿入・近傍列挙が支配的になる)
+    const reactive: Particle[] = [];
+    for (const p of this.world.all()) {
+      if (this.reactiveKinds.has(p.kind)) {
+        reactive.push(p);
+      }
+    }
+    const pairs = this.collisionDetector.findHitPairs(reactive);
 
     // 3. 反応適用
     for (const [a, b] of pairs) {

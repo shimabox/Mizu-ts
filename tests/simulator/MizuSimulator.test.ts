@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import type { Particle } from '../../src/core/Particle';
 import { SeededRandom } from '../../src/core/Random';
 import { ParticleFactory } from '../../src/particles/ParticleFactory';
 import { BruteForceCollisionDetector } from '../../src/physics/BruteForceCollisionDetector';
+import type { CollisionDetector } from '../../src/physics/CollisionDetector';
 import { ReactionRegistry } from '../../src/reactions/ReactionRegistry';
 import { HHFusion } from '../../src/reactions/rules/HHFusion';
 import { OxidationToWater } from '../../src/reactions/rules/OxidationToWater';
@@ -143,6 +145,50 @@ describe('MizuSimulator クラスのテスト', () => {
 
     // 粒子が消滅しきっていないこと(H+H, O+H2 の反応は総数を保存または増やす)
     expect(simulator.count('O')).toBe(10);
+  });
+
+  it('反応ルールに関与しない kind(H2o)は衝突判定に渡されないこと', () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = sw;
+    canvas.height = sh;
+
+    const random = new SeededRandom(42);
+    const factory = new ParticleFactory(sw, sh, random);
+    const registry = new ReactionRegistry();
+    registry.register(new HHFusion(factory));
+    registry.register(new OxidationToWater(factory));
+
+    // findHitPairs に渡された粒子を記録するフェイク detector
+    const seen: Particle[][] = [];
+    const fakeDetector: CollisionDetector = {
+      findHitPairs: (particles) => {
+        seen.push([...particles]);
+        return [];
+      },
+    };
+
+    const world = new World();
+    const simulator = new MizuSimulator(
+      canvas,
+      world,
+      factory,
+      registry,
+      fakeDetector,
+    );
+
+    world.add(factory.createH(100, 100));
+    world.add(factory.createO(300, 300));
+    world.add(factory.createH2(500, 100));
+    world.add(factory.createH2o(400, 100));
+
+    simulator.renderFrame();
+
+    expect(seen).toHaveLength(1);
+    const kinds = seen[0].map((p) => p.kind);
+    expect(kinds).toContain('H');
+    expect(kinds).toContain('O');
+    expect(kinds).toContain('H2');
+    expect(kinds).not.toContain('H2o'); // どのルールの pair にも現れない kind は除外
   });
 
   it('画面サイズによって scale が正しい値を返すこと', () => {
