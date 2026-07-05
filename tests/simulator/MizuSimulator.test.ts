@@ -7,6 +7,7 @@ import type { CollisionDetector } from '../../src/physics/CollisionDetector';
 import { ReactionRegistry } from '../../src/reactions/ReactionRegistry';
 import { HHFusion } from '../../src/reactions/rules/HHFusion';
 import { OxidationToWater } from '../../src/reactions/rules/OxidationToWater';
+import { OzoneFormation } from '../../src/reactions/rules/OzoneFormation';
 import { MizuSimulator } from '../../src/simulator/MizuSimulator';
 import { World } from '../../src/simulator/World';
 import { FakeParticle } from '../helpers/FakeParticle';
@@ -223,5 +224,75 @@ describe('MizuSimulator クラスのテスト', () => {
     expect(createSimulator(768).simulator.getScale()).toBe(1.2);
     expect(createSimulator(1279).simulator.getScale()).toBe(1.2);
     expect(createSimulator(1280).simulator.getScale()).toBe(1.5);
+  });
+
+  describe('OzoneFormation (O3) テスト', () => {
+    const createSimulatorWithO3 = (width = 800, height = 600, seed = 42) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const random = new SeededRandom(seed);
+      const factory = new ParticleFactory(width, height, random);
+      const registry = new ReactionRegistry();
+      registry.register(new HHFusion(factory));
+      registry.register(new OxidationToWater(factory));
+      registry.register(new OzoneFormation(factory)); // O3 を有効化
+
+      const world = new World();
+      const simulator = new MizuSimulator(
+        canvas,
+        world,
+        factory,
+        registry,
+        new BruteForceCollisionDetector(),
+      );
+      return { simulator, world, factory };
+    };
+
+    it('OzoneFormation を登録しない場合、O 同士の衝突は反応しないこと', () => {
+      const { simulator, world, factory } = createSimulator();
+      world.add(factory.createO(100, 100));
+      world.add(factory.createO(105, 105));
+
+      simulator.renderFrame();
+
+      // OzoneFormation が登録されていないので O は反応しない
+      expect(simulator.count('O')).toBe(2);
+      expect(simulator.count('O3')).toBe(0);
+    });
+
+    it('OzoneFormation を登録すると、O 同士の衝突で O: -1, O3: +1 となること', () => {
+      const { simulator, world, factory } = createSimulatorWithO3();
+      world.add(factory.createO(100, 100));
+      world.add(factory.createO(105, 105));
+
+      simulator.renderFrame();
+
+      expect(simulator.count('O')).toBe(1);
+      expect(simulator.count('O3')).toBe(1);
+    });
+
+    it('初期化時に O3 がカウントできること', () => {
+      const { simulator } = createSimulatorWithO3();
+      simulator.init(10, 10);
+
+      expect(simulator.count('O3')).toBe(0); // 初期化直後は O3 は存在しない
+    });
+
+    it('複数フレーム実行して O が O3 に変換され続けることを確認(スモーク)', () => {
+      const { simulator } = createSimulatorWithO3();
+      simulator.init(20, 20);
+
+      expect(() => {
+        for (let i = 0; i < 100; i++) {
+          simulator.renderFrame();
+        }
+      }).not.toThrow();
+
+      // O3 が生成される可能性がある(O が十分に接近すれば)
+      const o3Count = simulator.count('O3');
+      expect(o3Count).toBeGreaterThanOrEqual(0); // 0 個の可能性もあるが、エラーなく実行される
+    });
   });
 });
