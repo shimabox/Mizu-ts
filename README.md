@@ -16,13 +16,35 @@ https://shimabox.github.io/Mizu-ts/
 
 ## Debug
 
-https://shimabox.github.io/Mizu-ts/?m=1&h=60&o=100
+### Performance Monitoring
+
+Use the `?m=1` parameter to enable an on-screen statistics overlay showing:
+
+- **FPS**: 60-frame moving average of frame rate
+- **Frame**: Interval between animation frames in milliseconds (1 decimal precision)
+- **Update**: Execution time of `renderFrame()` (JS time) in milliseconds
+- **Particle counts**: Number of each particle kind (H, H2, O, H2o), shown even when 0
+- **Total**: Total number of particles on screen
+
+Example: https://shimabox.github.io/Mizu-ts/?m=1&h=60&o=100
+
+### Load Testing
+
+Use `?h=` and `?o=` parameters to control initial particle counts and test performance:
+
+- `?h=500&o=500` — Medium load (watch FPS with overlay)
+- `?h=1000&o=1000` — High load (expect frame time > 60ms on typical hardware)
+- `?h=3000&o=3000` — Heavy load (for extreme stress testing)
+
+Note: Frame time measurement uses high-precision timestamps (1ms decimal), allowing observation of sub-millisecond variations in rendering performance.
+
+### URL Parameters
 
 |key|default|type|description|
 |:---|:---|:---|:---|
-|m|0|number|Show measurement if set to 1|
-|h|30|number|Number of H to generate|
-|o|50|number|Number of O to generate|
+|m|0|number|Show performance overlay if set to 1|
+|h|30|number|Number of H atoms to generate (scaled by screen width)|
+|o|50|number|Number of O atoms to generate (scaled by screen width)|
 
 ## TODO
 
