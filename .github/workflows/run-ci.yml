@@ -51,7 +51,19 @@ jobs:
           path: ./coverage
 
       - name: Generate Dependency Graph
-        run: npm run dependency-graph
+        run: |
+          # 再生成前に、コミット済み SVG の構造情報(ノード/エッジの <title>)を控えておく
+          grep -o '<title>[^<]*</title>' dependency-graph.svg | sort > /tmp/committed-graph-titles.txt
+          npm run dependency-graph
+
+      # コミット済みの dependency-graph.svg が実際の依存関係より古いままだとここで失敗する。
+      # モジュールを追加/削除したら `npm run dependency-graph` を実行して SVG も一緒にコミットすること。
+      # graphviz のバージョン差によるレイアウト座標の違いに影響されないよう、
+      # SVG 全体ではなくノード/エッジの <title>(構造情報)だけを比較する。
+      - name: Check Dependency Graph is up to date
+        run: |
+          grep -o '<title>[^<]*</title>' dependency-graph.svg | sort > /tmp/current-graph-titles.txt
+          diff -u /tmp/committed-graph-titles.txt /tmp/current-graph-titles.txt
 
       - name: Upload Dependency Graph
         uses: actions/upload-artifact@v4
