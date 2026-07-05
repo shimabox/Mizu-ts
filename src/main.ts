@@ -1,4 +1,5 @@
 import { MathRandom } from './core/Random';
+import { StatsOverlay } from './debug/StatsOverlay';
 import { ParticleFactory } from './particles/ParticleFactory';
 import { GridCollisionDetector } from './physics/GridCollisionDetector';
 import { DEFAULT_CELL_SIZE, SpatialGrid } from './physics/SpatialGrid';
@@ -7,7 +8,6 @@ import { HHFusion } from './reactions/rules/HHFusion';
 import { OxidationToWater } from './reactions/rules/OxidationToWater';
 import { MizuSimulator } from './simulator/MizuSimulator';
 import { World } from './simulator/World';
-import { Measurement } from './util/Measurement';
 
 const query = window.location.search;
 const urlParams = new URLSearchParams(query);
@@ -47,19 +47,33 @@ window.addEventListener('DOMContentLoaded', () => {
   const scale = simulator.getScale();
   simulator.init(hCount * scale, oCount * scale);
 
-  const loop = () => {
-    if (isMeasureMode) {
-      Measurement.factory()
-        .measure(() => simulator.renderFrame())
-        .add(`H: ${simulator.count('H')}`)
-        .add(`H2: ${simulator.count('H2')}`)
-        .add(`O: ${simulator.count('O')}`)
-        .add(`H2o: ${simulator.count('H2o')}`)
-        .render();
+  let overlay: StatsOverlay | null = null;
+  if (isMeasureMode) {
+    overlay = new StatsOverlay();
+  }
+
+  const loop = (timestamp: DOMHighResTimeStamp) => {
+    if (overlay) {
+      overlay.frame(timestamp);
+
+      // Measure renderFrame execution time (JS time, distinct from rAF interval)
+      const renderStart = performance.now();
+      simulator.renderFrame();
+      overlay.setFrameTime(performance.now() - renderStart);
+
+      // Collect particle counts by kind (always show all kinds, even at 0)
+      const stats = new Map<string, number>();
+      const allKinds = ['H', 'H2', 'O', 'H2o'];
+      for (const kind of allKinds) {
+        stats.set(kind, simulator.count(kind));
+      }
+
+      overlay.setStats(stats);
+      overlay.render();
     } else {
       simulator.renderFrame();
     }
     requestAnimationFrame(loop);
   };
-  loop();
+  requestAnimationFrame(loop);
 });
