@@ -14,6 +14,14 @@ import { O } from './O';
  * 乱数・画面サイズ・スケールを注入して behavior + renderer を合成する。
  */
 export class ParticleFactory {
+  /**
+   * 「文字列×フォントサイズ」をキーにした measureText 結果のキャッシュ。
+   * static にすることで全 ParticleFactory インスタンス(≒アプリ全体で通常1つ)を通して共有し、
+   * 粒子生成のたびに `document.createElement('canvas')` + `measureText` が走らないようにする(P5)。
+   * キーの組み合わせは (H|H2|O) × (scale 1.0|1.2 の2段階) 程度なので高々数エントリに収まる。
+   */
+  private static readonly textWidthCache = new Map<string, number>();
+
   constructor(
     private readonly sw: number,
     private readonly sh: number,
@@ -90,13 +98,22 @@ export class ParticleFactory {
   }
 
   private measureTextWidth(text: string): number {
+    const fontSize = this.baseFontSize();
+    const key = `${text}@${fontSize}`;
+    const cached = ParticleFactory.textWidthCache.get(key);
+    if (cached !== undefined) {
+      return cached;
+    }
+
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       throw new Error('Failed to get canvas 2D context');
     }
-    ctx.font = `${this.baseFontSize()}px sans-serif`;
-    return ctx.measureText(text).width;
+    ctx.font = `${fontSize}px sans-serif`;
+    const width = ctx.measureText(text).width;
+    ParticleFactory.textWidthCache.set(key, width);
+    return width;
   }
 
   private randomColor(): string {

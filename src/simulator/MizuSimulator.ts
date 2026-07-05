@@ -20,6 +20,12 @@ export class MizuSimulator {
    * Registry が返すのはライブビューなので毎フレーム作り直す必要はない。
    */
   private readonly reactiveKinds: ReadonlySet<ParticleKind>;
+  /**
+   * kind ごとの描画バケツ。毎フレーム new せず使い回す
+   * (クリアは各配列の length = 0。SpatialGrid と同じ流儀)。
+   * 具象 kind 名は列挙しない — 初出順に Map へ追加されるため新分子でも自動で動く。
+   */
+  private readonly renderBuckets = new Map<ParticleKind, Particle[]>();
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -95,11 +101,33 @@ export class MizuSimulator {
     // 4. 死亡回収(1 パス)
     this.world.sweep();
 
-    // 5. 描画
+    // 5. 描画(world 配列順ではなく kind ごとにグループ化して描画する)
+    //
+    // 旧実装(Phase 0 以前)はもともと kind 単位の描画順(H → H2 → O → H2o)
+    // であり、Phase 1 のパイプライン化で world 配列順(混在)に変わっていた。
+    // kind グループ化は重なり順の意味で旧挙動の再現になる。
+    // レンダラー種別(fillText / グラデーション fill)の交互切り替えを避ける
+    // 効果もある。
+    //
+    // kind の描画順はバケツ Map への初出順(挿入順)。具象 kind 名には依存しない。
+    for (const bucket of this.renderBuckets.values()) {
+      bucket.length = 0;
+    }
+    for (const p of this.world.all()) {
+      let bucket = this.renderBuckets.get(p.kind);
+      if (!bucket) {
+        bucket = [];
+        this.renderBuckets.set(p.kind, bucket);
+      }
+      bucket.push(p);
+    }
+
     this.bufferCtx.fillStyle = '#fff';
     this.bufferCtx.fillRect(0, 0, this.cw, this.ch);
-    for (const p of this.world.all()) {
-      p.render(this.bufferCtx);
+    for (const bucket of this.renderBuckets.values()) {
+      for (const p of bucket) {
+        p.render(this.bufferCtx);
+      }
     }
     this.ctx.drawImage(this.bufferCanvas, 0, 0);
   }

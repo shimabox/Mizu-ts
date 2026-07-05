@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { SeededRandom } from '../../src/core/Random';
 import { ParticleFactory } from '../../src/particles/ParticleFactory';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('ParticleFactory のテスト', () => {
   const sw = 800;
@@ -57,5 +61,30 @@ describe('ParticleFactory のテスト', () => {
     expect(a.getX()).toBe(b.getX());
     expect(a.getY()).toBe(b.getY());
     expect(a.getRadius()).toBe(b.getRadius());
+  });
+
+  it('measureText キャッシュがヒットし、2体目以降で canvas 生成が呼ばれないこと', async () => {
+    // このファイルの他テストで既に 'H@24' / 'H@28.8' 等がキャッシュ済みのため、
+    // 「初回は canvas 生成される」ことまで検証するには static キャッシュをリセットする必要がある。
+    // vi.resetModules() 後に動的 import することで、まっさらな static キャッシュを持つ
+    // ParticleFactory を得る(このファイル冒頭で静的 import 済みのクラスには影響しない)。
+    vi.resetModules();
+    const { ParticleFactory: FreshParticleFactory } = await import('../../src/particles/ParticleFactory');
+    const { SeededRandom: FreshSeededRandom } = await import('../../src/core/Random');
+
+    const createElementSpy = vi.spyOn(document, 'createElement');
+    const factory = new FreshParticleFactory(sw, sh, new FreshSeededRandom(1));
+
+    factory.createH(0, 0);
+    const canvasCallsAfterFirst = createElementSpy.mock.calls.filter(([tag]) => tag === 'canvas').length;
+    expect(canvasCallsAfterFirst).toBeGreaterThan(0); // 初回は measureText のため canvas が生成される
+
+    factory.createH(10, 10);
+    const canvasCallsAfterSecond = createElementSpy.mock.calls.filter(([tag]) => tag === 'canvas').length;
+    expect(canvasCallsAfterSecond).toBe(canvasCallsAfterFirst); // 2体目以降はキャッシュヒットで増えない
+
+    factory.createH(20, 20);
+    const canvasCallsAfterThird = createElementSpy.mock.calls.filter(([tag]) => tag === 'canvas').length;
+    expect(canvasCallsAfterThird).toBe(canvasCallsAfterFirst);
   });
 });
