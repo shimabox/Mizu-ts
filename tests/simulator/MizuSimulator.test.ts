@@ -294,5 +294,25 @@ describe('MizuSimulator クラスのテスト', () => {
       const o3Count = simulator.count('O3');
       expect(o3Count).toBeGreaterThanOrEqual(0); // 0 個の可能性もあるが、エラーなく実行される
     });
+
+    it('O3 が生成後、寿命経過で World から消えること', () => {
+      const { simulator, world, factory } = createSimulatorWithO3();
+      world.add(factory.createO(100, 100));
+      world.add(factory.createO(105, 105));
+
+      // O 同士を衝突させて O3 を生成
+      simulator.renderFrame();
+
+      expect(simulator.count('O3')).toBe(1);
+
+      // O3 の最大寿命は 240 + 120 = 360 フレーム。多めに実行。
+      for (let i = 0; i < 370; i++) {
+        simulator.renderFrame();
+      }
+
+      // O3 が寿命切れで World から消えていること
+      expect(simulator.count('O3')).toBe(0);
+      expect(world.all()).toHaveLength(1); // O が 1 個残っている
+    });
   });
 });
