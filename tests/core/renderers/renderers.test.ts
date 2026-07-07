@@ -12,7 +12,12 @@ const createCtx = (): CanvasRenderingContext2D => {
   return ctx;
 };
 
-type DrawMethod = 'fillText' | 'fill' | 'arc' | 'createRadialGradient';
+type DrawMethod =
+  | 'fillText'
+  | 'fill'
+  | 'arc'
+  | 'createRadialGradient'
+  | 'setTransform';
 
 /**
  * node-canvas では fillText / fill / arc 等は prototype メソッドとして
@@ -31,28 +36,29 @@ describe('TextRenderer のテスト', () => {
     expect(() => renderer.render(createCtx(), 100, 100)).not.toThrow();
   });
 
-  it('指定した色とフォントと影で描画されること', () => {
+  it('指定した色とフォントで描画され、高価な shadow* プロパティを使わないこと', () => {
     const ctx = createCtx();
     const renderer = new TextRenderer('O', '#00ff00', 28.8);
     renderer.render(ctx, 100, 100);
 
     expect(ctx.fillStyle).toBe('#00ff00');
     expect(ctx.font).toBe('28.8px sans-serif');
-    expect(ctx.shadowColor).toBe('#888888');
-    expect(ctx.shadowOffsetX).toBe(1);
-    expect(ctx.shadowOffsetY).toBe(1);
-    expect(ctx.shadowBlur).toBe(1);
+    // 疑似シャドウ(1px ずらした2度描き)方式のため shadow* は既定値のまま
+    expect(ctx.shadowBlur).toBe(0);
+    expect(ctx.shadowOffsetX).toBe(0);
+    expect(ctx.shadowOffsetY).toBe(0);
   });
 
-  it('指定した座標にテキストが描画されること', () => {
+  it('疑似シャドウ(+1px の影色)→ 本体の順にテキストが描画されること', () => {
     const ctx = createCtx();
     const fillTextSpy = spyOnProto(ctx, 'fillText');
     const renderer = new TextRenderer('H', '#ff0000', 24);
 
     renderer.render(ctx, 100, 200);
 
-    expect(fillTextSpy).toHaveBeenCalledTimes(1);
-    expect(fillTextSpy).toHaveBeenCalledWith('H', 100, 200);
+    expect(fillTextSpy).toHaveBeenCalledTimes(2);
+    expect(fillTextSpy).toHaveBeenNthCalledWith(1, 'H', 101, 201);
+    expect(fillTextSpy).toHaveBeenNthCalledWith(2, 'H', 100, 200);
   });
 });
 
@@ -71,7 +77,7 @@ describe('SubscriptTextRenderer のテスト', () => {
     expect(ctx.font).toBe('18px sans-serif');
   });
 
-  it('本体と下付き文字が旧実装どおりのオフセットで描画されること', () => {
+  it('本体・下付き文字とも疑似シャドウ→本体の順に、旧実装どおりのオフセットで描画されること', () => {
     const ctx = createCtx();
     const fillTextSpy = spyOnProto(ctx, 'fillText');
     const bodyWidth = 30;
@@ -86,16 +92,23 @@ describe('SubscriptTextRenderer のテスト', () => {
 
     renderer.render(ctx, 100, 200);
 
-    expect(fillTextSpy).toHaveBeenCalledTimes(2);
-    // 本体: x - bodyWidth / 6
+    expect(fillTextSpy).toHaveBeenCalledTimes(4);
+    // 本体: x - bodyWidth / 6(疑似シャドウは +1px)
     expect(fillTextSpy).toHaveBeenNthCalledWith(
       1,
+      'H',
+      100 - bodyWidth / 6 + 1,
+      201,
+    );
+    expect(fillTextSpy).toHaveBeenNthCalledWith(
+      2,
       'H',
       100 - bodyWidth / 6,
       200,
     );
-    // 下付き文字: x + 12, y + 3
-    expect(fillTextSpy).toHaveBeenNthCalledWith(2, '2', 112, 203);
+    // 下付き文字: x + 12, y + 3(疑似シャドウは +1px)
+    expect(fillTextSpy).toHaveBeenNthCalledWith(3, '2', 113, 204);
+    expect(fillTextSpy).toHaveBeenNthCalledWith(4, '2', 112, 203);
   });
 });
 
@@ -105,74 +118,85 @@ describe('DropletRenderer のテスト', () => {
     expect(() => renderer.render(createCtx(), 100, 100)).not.toThrow();
   });
 
-  it('影の色・オフセット・実効 shadowBlur=1 が fill 時に設定されていること', () => {
+  it('疑似シャドウ(影色の単色円)→ 本体の 2 回 fill され、shadow* プロパティを使わないこと', () => {
     const ctx = createCtx();
     const proto = Object.getPrototypeOf(ctx) as CanvasRenderingContext2D;
     const originalFill = proto.fill;
-    const captured: Array<{
-      shadowColor: string;
-      shadowBlur: number;
-      shadowOffsetX: number;
-      shadowOffsetY: number;
-    }> = [];
+    const capturedFillStyles: Array<string | CanvasGradient | CanvasPattern> =
+      [];
     const fillSpy = vi
       .spyOn(proto, 'fill')
       .mockImplementation(function (
         this: CanvasRenderingContext2D,
         ...args: Parameters<CanvasRenderingContext2D['fill']>
       ) {
-        captured.push({
-          shadowColor: this.shadowColor as string,
-          shadowBlur: this.shadowBlur,
-          shadowOffsetX: this.shadowOffsetX,
-          shadowOffsetY: this.shadowOffsetY,
-        });
+        capturedFillStyles.push(this.fillStyle);
         return originalFill.apply(this, args);
       });
 
     const renderer = new DropletRenderer(21);
     renderer.render(ctx, 100, 100);
 
-    expect(captured).toHaveLength(1);
-    expect(captured[0].shadowColor).toBe('#007fff');
-    expect(captured[0].shadowOffsetX).toBe(1);
-    expect(captured[0].shadowOffsetY).toBe(1);
-    // 旧実装では共有 bufferCtx にテキスト粒子の shadowBlur=1 が持ち越されて描画されて
-    // いた(実効値 1)。暗黙の持ち越しに依存せず DropletRenderer が明示的に 1 を
-    // 設定する(見た目の維持)
-    expect(captured[0].shadowBlur).toBe(1);
+    expect(capturedFillStyles).toHaveLength(2);
+    // 1 回目: 疑似シャドウの単色、2 回目: 本体のグラデーション
+    expect(capturedFillStyles[0]).toBe('#007fff');
+    expect(typeof capturedFillStyles[1]).toBe('object');
+    // 疑似シャドウ方式のため shadow* は既定値のまま
+    expect(ctx.shadowBlur).toBe(0);
+    expect(ctx.shadowOffsetX).toBe(0);
+    expect(ctx.shadowOffsetY).toBe(0);
 
     fillSpy.mockRestore();
   });
 
-  it('グラデーションが粒子位置からの相対オフセットで生成されること', () => {
+  it('グラデーションが原点基準で生成され、setTransform で粒子位置へ移動されること', () => {
     const ctx = createCtx();
     const gradientSpy = spyOnProto(ctx, 'createRadialGradient');
+    const transformSpy = spyOnProto(ctx, 'setTransform');
     const size = 20;
     const renderer = new DropletRenderer(size);
 
     renderer.render(ctx, 100, 100);
 
-    // gx = x - size*0.4, gy = y - size*0.4, 半径 0 → size/2 + size*0.4
+    // 原点基準: 中心 (-offset, -offset)、半径 0 → size/2 + offset
     const offset = size * 0.4;
     expect(gradientSpy).toHaveBeenCalledWith(
-      100 - offset,
-      100 - offset,
+      -offset,
+      -offset,
       0,
-      100 - offset,
-      100 - offset,
+      -offset,
+      -offset,
       size / 2 + offset,
     );
+    // 粒子位置へ平行移動し、描画後に単位行列へ戻す
+    expect(transformSpy).toHaveBeenNthCalledWith(1, 1, 0, 0, 1, 100, 100);
+    expect(transformSpy).toHaveBeenNthCalledWith(2, 1, 0, 0, 1, 0, 0);
   });
 
-  it('円弧(arc)が粒子位置を中心に半径 size/2 で描かれること', () => {
+  it('グラデーションはインスタンスごとに 1 回だけ生成されキャッシュされること', () => {
+    const ctx = createCtx();
+    const gradientSpy = spyOnProto(ctx, 'createRadialGradient');
+    const renderer = new DropletRenderer(24);
+
+    renderer.render(ctx, 10, 10);
+    renderer.render(ctx, 20, 20);
+    renderer.render(ctx, 30, 30);
+
+    expect(gradientSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('疑似シャドウは +1px、本体は移動後の原点を中心に半径 size/2 で描かれること', () => {
     const ctx = createCtx();
     const arcSpy = spyOnProto(ctx, 'arc');
     const renderer = new DropletRenderer(24);
 
     renderer.render(ctx, 50, 60);
 
-    expect(arcSpy).toHaveBeenCalledWith(50, 60, 12, 0, Math.PI * 2, true);
+    expect(arcSpy).toHaveBeenCalledTimes(2);
+    // 疑似シャドウ: (x+1, y+1)
+    expect(arcSpy).toHaveBeenNthCalledWith(1, 51, 61, 12, 0, Math.PI * 2, true);
+    // 本体: setTransform(…, x, y) 後の原点
+    expect(arcSpy).toHaveBeenNthCalledWith(2, 0, 0, 12, 0, Math.PI * 2, true);
   });
 
   it('直描き方式のため render でオフスクリーン canvas を生成しないこと', () => {
