@@ -48,6 +48,7 @@ describe('MizuSimulator の性能回帰チェック(粗い上限テスト)', () 
       arc: () => {},
       fill: () => {},
       createRadialGradient: () => ({ addColorStop: () => {} }),
+      setTransform: () => {},
       measureText: (text: string) => ({ width: 15 * text.length }),
     };
     const canvasProto = Object.getPrototypeOf(
