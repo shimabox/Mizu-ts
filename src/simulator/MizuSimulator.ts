@@ -12,8 +12,6 @@ export class MizuSimulator {
   private readonly cw: number;
   private readonly ch: number;
   private readonly ctx: CanvasRenderingContext2D;
-  private readonly bufferCanvas: HTMLCanvasElement;
-  private readonly bufferCtx: CanvasRenderingContext2D;
   /**
    * 反応に関与しうる kind の集合(Registry の読み取り専用ビュー)。
    * どのルールにも現れない kind(例: H2o)は衝突判定に渡さない。
@@ -43,16 +41,6 @@ export class MizuSimulator {
       throw new Error('Canvas context not available');
     }
     this.ctx = ctx;
-
-    // ダブルバッファリング
-    this.bufferCanvas = document.createElement('canvas');
-    this.bufferCanvas.width = this.cw;
-    this.bufferCanvas.height = this.ch;
-    const bufferCtx = this.bufferCanvas.getContext('2d');
-    if (!bufferCtx) {
-      throw new Error('Buffer canvas context not available');
-    }
-    this.bufferCtx = bufferCtx;
   }
 
   public init(hCount: number, oCount: number): void {
@@ -122,14 +110,17 @@ export class MizuSimulator {
       bucket.push(p);
     }
 
-    this.bufferCtx.fillStyle = '#fff';
-    this.bufferCtx.fillRect(0, 0, this.cw, this.ch);
+    // 画面 canvas へ直描きする。かつては手製のダブルバッファリング
+    // (オフスクリーン canvas に描いて drawImage で転写)を行っていたが、
+    // ブラウザは rAF 内の canvas 描画をもともとダブルバッファリングしており、
+    // 転写は毎フレーム全画面 1 枚分のラスタライズを追加するだけだった。
+    this.ctx.fillStyle = '#fff';
+    this.ctx.fillRect(0, 0, this.cw, this.ch);
     for (const bucket of this.renderBuckets.values()) {
       for (const p of bucket) {
-        p.render(this.bufferCtx);
+        p.render(this.ctx);
       }
     }
-    this.ctx.drawImage(this.bufferCanvas, 0, 0);
   }
 
   public count(kind: ParticleKind): number {
