@@ -168,6 +168,8 @@ Download the installer from the [official Graphviz download page](https://www.gr
 
 ### Google Chrome (For Benchmark Tool)
 
+Google Chrome **155.0.8059.39 or later** is required. The benchmark checks the browser version before opening any page and stops if Chrome is outdated or its version cannot be determined. Update Chrome before running the benchmark.
+
 The benchmark tool (`npm run bench`) launches your locally installed **Google Chrome** via `puppeteer-core` (no Chromium is bundled), so Chrome must be installed.
 
 It runs the browser **headful** on purpose — headless rendering paths differ and can invert benchmark conclusions — so a GUI environment is required (it does not work over SSH or on displayless CI machines).

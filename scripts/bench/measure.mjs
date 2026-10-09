@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer-core';
+import { assertChromeVersion } from './chrome-version.mjs';
 
 const VIEWPORT = { width: 1280, height: 800 };
 
@@ -11,7 +12,7 @@ const VIEWPORT = { width: 1280, height: 800 };
  * ブラウザウィンドウで行う。
  */
 export async function launchBrowser() {
-  return puppeteer
+  const browser = await puppeteer
     .launch({
       channel: 'chrome',
       headless: false,
@@ -43,6 +44,13 @@ export async function launchBrowser() {
         ].join('\n'),
       );
     });
+  try {
+    assertChromeVersion(await browser.version());
+    return browser;
+  } catch (error) {
+    await browser.close();
+    throw error;
+  }
 }
 
 /**
